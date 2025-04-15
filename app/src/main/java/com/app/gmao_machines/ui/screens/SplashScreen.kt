@@ -6,18 +6,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.R
+import com.app.gmao_machines.ui.theme.backgroundColor
+import com.app.gmao_machines.ui.theme.splashIndicatorColor
 import com.app.gmao_machines.ui.viewModel.SplashViewModel
 
 @Composable
@@ -25,10 +24,6 @@ fun SplashScreen(
     viewModel: SplashViewModel = viewModel(),
     onNavigateToMain: () -> Unit
 ) {
-    // Color theme - customize based on your app's brand
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val backgroundColor = MaterialTheme.colorScheme.background
-
     // Observe navigation state from ViewModel
     val shouldNavigate by viewModel.navigateToMain.collectAsState()
 
@@ -100,7 +95,7 @@ fun SplashScreen(
                             .size(12.dp)
                             .scale(0.8f + (alpha * 0.4f))
                             .alpha(alpha)
-                            .background(color = primaryColor, shape = MaterialTheme.shapes.small)
+                            .background(color = splashIndicatorColor, shape = MaterialTheme.shapes.small)
                     )
                 }
             }

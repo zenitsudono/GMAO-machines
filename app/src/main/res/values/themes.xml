@@ -2,4 +2,18 @@
 <resources>
 
     <style name="Theme.GMAOmachines" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Set completely transparent background -->
+        <item name="windowSplashScreenBackground">@android:color/transparent</item>
+
+        <!-- Use a 1x1 transparent pixel as the icon -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/transparent_pixel</item>
+
+        <!-- Set duration to absolute minimum -->
+        <item name="windowSplashScreenAnimationDuration">1</item>
+
+        <!-- Theme to transition to -->
+        <item name="postSplashScreenTheme">@style/Theme.GMAOmachines</item>
+    </style>
 </resources>
