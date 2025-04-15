@@ -1,6 +1,5 @@
 package com.app.gmao_machines.ui.screens
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -15,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.app.gmao_machines.data.OnboardingPage
 import com.app.gmao_machines.data.onboardingPages
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {

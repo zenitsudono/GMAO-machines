@@ -10,7 +10,6 @@ import com.app.gmao_machines.ui.theme.GMAOmachinesTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContent {
             GMAOmachinesTheme {
@@ -22,11 +21,8 @@ class MainActivity : ComponentActivity() {
                 } else {
                     AppNavigation()
                 }
-
             }
         }
-
-
     }
 }
 
