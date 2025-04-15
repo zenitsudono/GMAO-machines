@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GMAOmachinesTheme {
                 if (viewModel.isOnboardingCompleted()) {
-                    MainScreen()
+                    AppNavigation()
                 } else {
                     OnboardingScreen(
                         onComplete = { viewModel.completeOnboarding() }
