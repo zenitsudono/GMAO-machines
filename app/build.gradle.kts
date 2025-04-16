@@ -61,6 +61,9 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.8.9")
     implementation("androidx.navigation:navigation-ui:2.8.9")
 
+    // Material Icon
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
     // Splash API
     implementation("androidx.core:core-splashscreen:1.0.1")
 
