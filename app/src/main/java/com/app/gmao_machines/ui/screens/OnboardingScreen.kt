@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ fun OnboardingScreen(
         )
     )
 
+    val isComplete = viewModel.isComplete.value
     val pagerState = rememberPagerState(initialPage = 0) { pages.size }
     val coroutineScope = rememberCoroutineScope()
 
@@ -63,6 +65,12 @@ fun OnboardingScreen(
             coroutineScope.launch {
                 pagerState.animateScrollToPage(viewModel.currentPage.value)
             }
+        }
+    }
+
+    LaunchedEffect(isComplete) {
+        if (isComplete) {
+            onComplete()
         }
     }
 
@@ -108,14 +116,13 @@ fun OnboardingScreen(
             isFirstPage = viewModel.isFirstPage(),
             isLastPage = viewModel.isLastPage(),
             onPrevious = { viewModel.previousPage() },
-            onNext = {
-                if (viewModel.isLastPage()) {
-                    onComplete()
-                } else {
-                    viewModel.nextPage()
-                }
+            onNext = { viewModel.nextPage() },
+            onSkip = {
+                viewModel.completeOnboarding()
             },
-            onSkip = { onComplete() }
+            onGetStarted = {
+                viewModel.completeOnboarding()
+            }
         )
     }
 }

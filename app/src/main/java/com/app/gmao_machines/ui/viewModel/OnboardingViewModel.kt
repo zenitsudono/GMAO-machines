@@ -3,20 +3,27 @@ package com.app.gmao_machines.ui.viewModel
 import android.app.Application
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.app.gmao_machines.models.OnboardingPref
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class OnboardingViewModel(application: Application) : AndroidViewModel(application) {
     private val onboardingPreferences = OnboardingPref(application)
 
-    // Current page state
     private val _currentPage = mutableIntStateOf(0)
     val currentPage: State<Int> = _currentPage
+
+    // Add a state flow to indicate when onboarding is complete
+    private val _isComplete = mutableStateOf(onboardingPreferences.isOnboardingCompleted())
+    val isComplete: State<Boolean> = _isComplete
 
     // Total number of onboarding pages
     val totalPages = 3
 
-    // Function to navigate to the next page
+    // Function to navigate to the next | previous page
     fun nextPage() {
         if (_currentPage.intValue < totalPages - 1) {
             _currentPage.intValue = _currentPage.intValue + 1
@@ -43,6 +50,7 @@ class OnboardingViewModel(application: Application) : AndroidViewModel(applicati
     // Function to mark onboarding as completed
     fun completeOnboarding() {
         onboardingPreferences.setOnboardingCompleted(true)
+        _isComplete.value = true
     }
 
     // Function to check if this is the last page

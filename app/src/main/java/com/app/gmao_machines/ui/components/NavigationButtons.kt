@@ -18,7 +18,8 @@ fun NavigationButtons(
     isLastPage: Boolean,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    onSkip: () -> Unit
+    onSkip: () -> Unit,
+    onGetStarted: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -47,7 +48,7 @@ fun NavigationButtons(
 
         // Next/Finish button (right)
         Button(
-            onClick = onNext,
+            onClick = if (isLastPage) onGetStarted else onNext,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Text(if (isLastPage) "Get Started" else "Next")
