@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
             splashScreenViewProvider.remove()
-        }
+        } 
 
         super.onCreate(savedInstanceState)
         setContent {

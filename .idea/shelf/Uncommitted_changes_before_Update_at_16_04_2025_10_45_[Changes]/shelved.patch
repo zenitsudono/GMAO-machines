@@ -1,0 +1,19 @@
+Index: app/src/main/java/com/app/gmao_machines/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.app.gmao_machines\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport com.app.gmao_machines.models.OnboardingPref\r\nimport com.app.gmao_machines.navigation.AppNavigation\r\nimport com.app.gmao_machines.ui.screens.OnboardingScreen\r\nimport com.app.gmao_machines.ui.theme.GMAOmachinesTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n\r\n        super.onCreate(savedInstanceState)\r\n        setContent {\r\n            GMAOmachinesTheme {\r\n                if (!OnboardingPref.isOnboardingCompleted(this)) {\r\n                    OnboardingScreen {\r\n                        OnboardingPref.setOnboardingCompleted(this)\r\n                        recreate()\r\n                    }\r\n                } else {\r\n                    AppNavigation()\r\n                }\r\n\r\n            }\r\n        }\r\n\r\n\r\n    }\r\n}\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/app/gmao_machines/MainActivity.kt b/app/src/main/java/com/app/gmao_machines/MainActivity.kt
+--- a/app/src/main/java/com/app/gmao_machines/MainActivity.kt	(revision 7ad3daa091470881e0a375285907436a957b0db4)
++++ b/app/src/main/java/com/app/gmao_machines/MainActivity.kt	(date 1744728087036)
+@@ -24,7 +24,7 @@
+                 }
+ 
+             }
+-        }
++        } 
+ 
+ 
+     }

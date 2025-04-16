@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -35,19 +34,19 @@ fun OnboardingScreen(
     // Define onboarding pages
     val pages = listOf(
         OnboardingPage(
-            title = "Welcome",
-            description = "Welcome to our app! Swipe to learn more.",
-            imageRes = R.drawable.splash_icon
+            title = "Bienvenue sur GMAO",
+            description = "Cette application vous aide à surveiller l’état de vos machines et à recevoir des alertes en temps réel en cas de problème.",
+            imageRes = R.drawable.firstonboarding
         ),
         OnboardingPage(
-            title = "Features",
-            description = "Discover all the amazing features our app offers.",
-            imageRes = R.drawable.splash_icon
+            title = "Soyez alerté instantanément",
+            description = "Recevez des notifications dès qu’un problème est détecté sur une machine. Accédez à l’historique des interventions et planifiez les réparations efficacement.",
+            imageRes = R.drawable.secondonboarding
         ),
         OnboardingPage(
             title = "Get Started",
             description = "You're all set! Start using the app now.",
-            imageRes = R.drawable.splash_icon
+            imageRes = R.drawable.lastonboarding
         )
     )
 
