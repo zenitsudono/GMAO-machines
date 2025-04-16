@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "819982504390",
+    "project_id": "gmao-machines",
+    "storage_bucket": "gmao-machines.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819982504390:android:b2220da3529c8cdc9162c7",
+        "android_client_info": {
+          "package_name": "com.app.gmao_machines.ui.screens"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQRoPnNcBe3diAI8af1CiY9a99lrSt20s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
