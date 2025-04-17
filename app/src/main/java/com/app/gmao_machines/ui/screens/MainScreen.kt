@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.models.Screen
 import com.app.gmao_machines.ui.components.FloatingBottomBar
-import com.app.gmao_machines.ui.theme.backgroundColor
+import com.app.gmao_machines.ui.theme.Background
 import com.app.gmao_machines.ui.viewModel.MainViewModel
 
 @Composable
@@ -28,7 +28,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(backgroundColor)
+                    .background(Background)
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -43,7 +43,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor)
+                .background(Background)
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {

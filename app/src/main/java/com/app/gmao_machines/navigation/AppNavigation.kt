@@ -1,36 +1,23 @@
 package com.app.gmao_machines.navigation
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.app.gmao_machines.ui.screens.AuthScreen
-import com.app.gmao_machines.ui.screens.MainScreen
-import com.app.gmao_machines.ui.screens.OnboardingScreen
-import com.app.gmao_machines.ui.screens.SplashScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.*
+import com.app.gmao_machines.ui.screens.*
 import com.app.gmao_machines.ui.viewModel.OnboardingViewModel
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
-    val isOnboardingComplete = viewModel.isComplete.value
     val navController = rememberNavController()
-
-    val startDestination = if (isOnboardingComplete) "splash" else "onboarding"
-
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
-    ) {
+    NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
-            SplashScreen(
-                onNavigateToMain = {
-                    navController.navigate("onboarding") {
-                        popUpTo("splash") { inclusive = true }
-                    }
-                }
-            )
+            SplashScreen {
+                navigateAfterSplash(navController, viewModel)
+            }
         }
 
         composable("onboarding") {
@@ -43,7 +30,11 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
 
         composable("auth") {
             AuthScreen(
-                onAuthSuccess = { navController.navigate("main") }
+                onAuthSuccess = {
+                    navController.navigate("main") {
+                        popUpTo("auth") { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -51,6 +42,7 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
             MyApp()
         }
     }
+
 }
 
 @Composable
@@ -59,3 +51,39 @@ fun MyApp() {
         MainScreen()
     }
 }
+
+@Composable
+fun SplashScreen(onFinish: () -> Unit) {
+    // Add your splash animation/UI here
+    LaunchedEffect(Unit) {
+        delay(2000L) // 2 seconds splash delay
+        onFinish()
+    }
+}
+
+fun navigateAfterSplash(
+    navController: NavHostController,
+    onboardingViewModel: OnboardingViewModel
+) {
+    val isOnboardingComplete = onboardingViewModel.isComplete.value
+    val isUserAuthenticated = FirebaseAuth.getInstance().currentUser != null
+
+    when {
+        !isOnboardingComplete -> {
+            navController.navigate("onboarding") {
+                popUpTo("splash") { inclusive = true }
+            }
+        }
+        !isUserAuthenticated -> {
+            navController.navigate("auth") {
+                popUpTo("splash") { inclusive = true }
+            }
+        }
+        else -> {
+            navController.navigate("main") {
+                popUpTo("splash") { inclusive = true }
+            }
+        }
+    }
+}
+

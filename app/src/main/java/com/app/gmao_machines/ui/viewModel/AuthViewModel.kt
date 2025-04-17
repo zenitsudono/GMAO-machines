@@ -1,9 +1,7 @@
 package com.app.gmao_machines.ui.viewModel
 
 import android.app.Application
-import com.app.gmao_machines.R
 import android.content.Intent
-import android.provider.Settings.Global.getString
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.AndroidViewModel

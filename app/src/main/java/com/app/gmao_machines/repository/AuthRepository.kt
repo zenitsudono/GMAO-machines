@@ -1,30 +1,42 @@
 package com.app.gmao_machines.repository
 
 import com.app.gmao_machines.data.User
-import kotlinx.coroutines.delay
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
-    // These methods would actually connect to your authentication service
-    // They're mocked here for demonstration
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    suspend fun registerUser(firstName: String, lastName: String, email: String, password: String): Boolean {
-        // Simulate network delay
-        delay(1000)
-        // In a real app, this would call your authentication API
-        return true
+    suspend fun registerUser(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ): Boolean {
+        val result = auth.createUserWithEmailAndPassword(email, password).await()
+        return result.user != null
     }
 
     suspend fun signInUser(email: String, password: String): User {
-        // Simulate network delay
-        delay(1000)
-        // In a real app, this would validate credentials with your backend
-        return User(email = email, firstName = "Test", lastName = "User")
+        val result = auth.signInWithEmailAndPassword(email, password).await()
+        val firebaseUser = result.user ?: throw Exception("User not found")
+
+        return User(
+            email = firebaseUser.email ?: "",
+            firstName = firebaseUser.displayName?.split(" ")?.firstOrNull() ?: "",
+            lastName = firebaseUser.displayName?.split(" ")?.lastOrNull() ?: ""
+        )
     }
 
     suspend fun signInWithGoogle(idToken: String): User {
-        // Simulate network delay
-        delay(1000)
-        // In a real app, this would verify the token with your backend
-        return User(email = "google@example.com", firstName = "Google", lastName = "User")
+        val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
+        val authResult = auth.signInWithCredential(credential).await()
+        val firebaseUser = authResult.user ?: throw Exception("Authentication failed")
+
+        return User(
+            email = firebaseUser.email ?: "",
+            firstName = firebaseUser.displayName?.split(" ")?.firstOrNull() ?: "",
+            lastName = firebaseUser.displayName?.split(" ")?.lastOrNull() ?: ""
+        )
     }
 }

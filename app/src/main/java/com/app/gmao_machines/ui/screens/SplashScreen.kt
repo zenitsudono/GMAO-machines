@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.R
-import com.app.gmao_machines.ui.theme.backgroundColor
+import com.app.gmao_machines.ui.theme.Background
 import com.app.gmao_machines.ui.theme.splashIndicatorColor
 import com.app.gmao_machines.ui.viewModel.SplashViewModel
 
@@ -63,7 +63,7 @@ fun SplashScreen(
     // Splash screen content
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = backgroundColor
+        color = Background
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

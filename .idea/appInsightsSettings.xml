@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.app.gmao_machines" />
+                  <option name="mobileSdkAppId" value="1:819982504390:android:ac8bd172263079369162c7" />
+                  <option name="projectId" value="gmao-machines" />
+                  <option name="projectNumber" value="819982504390" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
