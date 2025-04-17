@@ -1,5 +1,6 @@
 package com.app.gmao_machines.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.models.Screen
 import com.app.gmao_machines.ui.components.FloatingBottomBar
+import com.app.gmao_machines.ui.theme.backgroundColor
 import com.app.gmao_machines.ui.viewModel.MainViewModel
 
 @Composable
@@ -26,6 +28,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(backgroundColor)
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -40,6 +43,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(backgroundColor)
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {

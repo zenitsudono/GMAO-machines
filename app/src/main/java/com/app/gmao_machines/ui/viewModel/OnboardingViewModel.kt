@@ -6,9 +6,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.app.gmao_machines.models.OnboardingPref
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class OnboardingViewModel(application: Application) : AndroidViewModel(application) {
     private val onboardingPreferences = OnboardingPref(application)

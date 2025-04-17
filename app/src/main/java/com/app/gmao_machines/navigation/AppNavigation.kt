@@ -2,11 +2,11 @@ package com.app.gmao_machines.navigation
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.app.gmao_machines.ui.screens.AuthScreen
 import com.app.gmao_machines.ui.screens.MainScreen
 import com.app.gmao_machines.ui.screens.OnboardingScreen
 import com.app.gmao_machines.ui.screens.SplashScreen
@@ -26,7 +26,7 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
         composable("splash") {
             SplashScreen(
                 onNavigateToMain = {
-                    navController.navigate("main") {
+                    navController.navigate("onboarding") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
@@ -35,10 +35,16 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
 
         composable("onboarding") {
             OnboardingScreen(viewModel = viewModel) {
-                navController.navigate("main") {
+                navController.navigate("auth") {
                     popUpTo("onboarding") { inclusive = true }
                 }
             }
+        }
+
+        composable("auth") {
+            AuthScreen(
+                onAuthSuccess = { navController.navigate("main") }
+            )
         }
 
         composable("main") {

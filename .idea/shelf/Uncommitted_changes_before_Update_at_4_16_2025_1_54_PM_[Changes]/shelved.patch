@@ -1,0 +1,140 @@
+Index: app/src/main/java/com/app/gmao_machines/navigation/AppNavigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.app.gmao_machines.navigation\r\n\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.collectAsState\r\nimport androidx.lifecycle.viewmodel.compose.viewModel\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.app.gmao_machines.ui.screens.MainScreen\r\nimport com.app.gmao_machines.ui.screens.OnboardingScreen\r\nimport com.app.gmao_machines.ui.screens.SplashScreen\r\nimport com.app.gmao_machines.ui.viewModel.OnboardingViewModel\r\n\r\n@Composable\r\nfun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {\r\n    val isOnboardingComplete = viewModel.isComplete.value\r\n    val navController = rememberNavController()\r\n\r\n    val startDestination = if (isOnboardingComplete) \"splash\" else \"onboarding\"\r\n\r\n    NavHost(\r\n        navController = navController,\r\n        startDestination = startDestination\r\n    ) {\r\n        composable(\"splash\") {\r\n            SplashScreen(\r\n                onNavigateToMain = {\r\n                    navController.navigate(\"main\") {\r\n                        popUpTo(\"splash\") { inclusive = true }\r\n                    }\r\n                }\r\n            )\r\n        }\r\n\r\n        composable(\"onboarding\") {\r\n            OnboardingScreen(viewModel = viewModel) {\r\n                navController.navigate(\"main\") {\r\n                    popUpTo(\"onboarding\") { inclusive = true }\r\n                }\r\n            }\r\n        }\r\n\r\n        composable(\"main\") {\r\n            MyApp()\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun MyApp() {\r\n    MaterialTheme {\r\n        MainScreen()\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/app/gmao_machines/navigation/AppNavigation.kt b/app/src/main/java/com/app/gmao_machines/navigation/AppNavigation.kt
+--- a/app/src/main/java/com/app/gmao_machines/navigation/AppNavigation.kt	(revision c5f1ad8d4185fe77c3ad36593f17a9c06beb302a)
++++ b/app/src/main/java/com/app/gmao_machines/navigation/AppNavigation.kt	(date 1744802980413)
+@@ -2,11 +2,11 @@
+ 
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.runtime.Composable
+-import androidx.compose.runtime.collectAsState
+ import androidx.lifecycle.viewmodel.compose.viewModel
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.rememberNavController
++import com.app.gmao_machines.ui.screens.AuthScreen
+ import com.app.gmao_machines.ui.screens.MainScreen
+ import com.app.gmao_machines.ui.screens.OnboardingScreen
+ import com.app.gmao_machines.ui.screens.SplashScreen
+@@ -26,7 +26,7 @@
+         composable("splash") {
+             SplashScreen(
+                 onNavigateToMain = {
+-                    navController.navigate("main") {
++                    navController.navigate("onboarding") {
+                         popUpTo("splash") { inclusive = true }
+                     }
+                 }
+@@ -35,12 +35,18 @@
+ 
+         composable("onboarding") {
+             OnboardingScreen(viewModel = viewModel) {
+-                navController.navigate("main") {
++                navController.navigate("auth") {
+                     popUpTo("onboarding") { inclusive = true }
+                 }
+             }
+         }
+ 
++        composable("auth") {
++            AuthScreen(
++                onAuthSuccess = { navController.navigate("main") }
++            )
++        }
++
+         composable("main") {
+             MyApp()
+         }
+Index: app/src/main/java/com/app/gmao_machines/ui/screens/MainScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.app.gmao_machines.ui.screens\r\n\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.collectAsState\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.lifecycle.viewmodel.compose.viewModel\r\nimport com.app.gmao_machines.models.Screen\r\nimport com.app.gmao_machines.ui.components.FloatingBottomBar\r\nimport com.app.gmao_machines.ui.viewModel.MainViewModel\r\n\r\n@Composable\r\nfun MainScreen(viewModel: MainViewModel = viewModel()) {\r\n    val currentScreen = viewModel.currentScreen.collectAsState().value\r\n    val navigationItems = listOf(Screen.Home, Screen.History, Screen.Profile)\r\n\r\n    Scaffold(\r\n        bottomBar = {\r\n            Box(\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(horizontal = 24.dp, vertical = 12.dp),\r\n                contentAlignment = Alignment.Center\r\n            ) {\r\n                FloatingBottomBar(\r\n                    items = navigationItems,\r\n                    currentScreen = currentScreen,\r\n                    onScreenSelected = { viewModel.navigateTo(it) }\r\n                )\r\n            }\r\n        }\r\n    ) { paddingValues ->\r\n        Box(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(paddingValues),\r\n            contentAlignment = Alignment.Center\r\n        ) {\r\n            when (currentScreen) {\r\n                Screen.Home -> Text(\"Home Screen\")\r\n                Screen.History -> Text(\"History Screen\")\r\n                Screen.Profile -> Text(\"Profile Screen\")\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/app/gmao_machines/ui/screens/MainScreen.kt b/app/src/main/java/com/app/gmao_machines/ui/screens/MainScreen.kt
+--- a/app/src/main/java/com/app/gmao_machines/ui/screens/MainScreen.kt	(revision c5f1ad8d4185fe77c3ad36593f17a9c06beb302a)
++++ b/app/src/main/java/com/app/gmao_machines/ui/screens/MainScreen.kt	(date 1744799200353)
+@@ -1,5 +1,6 @@
+ package com.app.gmao_machines.ui.screens
+ 
++import androidx.compose.foundation.background
+ import androidx.compose.foundation.layout.Box
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.fillMaxWidth
+@@ -14,6 +15,7 @@
+ import androidx.lifecycle.viewmodel.compose.viewModel
+ import com.app.gmao_machines.models.Screen
+ import com.app.gmao_machines.ui.components.FloatingBottomBar
++import com.app.gmao_machines.ui.theme.backgroundColor
+ import com.app.gmao_machines.ui.viewModel.MainViewModel
+ 
+ @Composable
+@@ -26,6 +28,7 @@
+             Box(
+                 modifier = Modifier
+                     .fillMaxWidth()
++                    .background(backgroundColor)
+                     .padding(horizontal = 24.dp, vertical = 12.dp),
+                 contentAlignment = Alignment.Center
+             ) {
+@@ -40,6 +43,7 @@
+         Box(
+             modifier = Modifier
+                 .fillMaxSize()
++                .background(backgroundColor)
+                 .padding(paddingValues),
+             contentAlignment = Alignment.Center
+         ) {
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.kotlin.android)\r\n    alias(libs.plugins.kotlin.compose)\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.app.gmao_machines\"\r\n    compileSdk = 35\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.app.gmao_machines\"\r\n        minSdk = 24\r\n        targetSdk = 35\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_11\r\n        targetCompatibility = JavaVersion.VERSION_11\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"11\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n\r\n    // Compose Navigation\r\n    implementation(\"androidx.navigation:navigation-compose:2.8.9\")\r\n    implementation(\"androidx.navigation:navigation-fragment:2.8.9\")\r\n    implementation(\"androidx.navigation:navigation-ui:2.8.9\")\r\n\r\n    // Material Icon\r\n    implementation(\"androidx.compose.material:material-icons-extended:1.7.8\")\r\n\r\n    // Splash API\r\n    implementation(\"androidx.core:core-splashscreen:1.0.1\")\r\n\r\n    // DataStore Preferences\r\n    implementation(\"androidx.datastore:datastore-preferences:1.1.4\")\r\n\r\n    // ViewModel\r\n    implementation(\"androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7\")\r\n\r\n    //Vector drawable\r\n    implementation(\"androidx.vectordrawable:vectordrawable:1.2.0\")\r\n    implementation(\"io.coil-kt:coil-compose:2.4.0\")\r\n    implementation(\"io.coil-kt:coil-svg:2.4.0\")\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision c5f1ad8d4185fe77c3ad36593f17a9c06beb302a)
++++ b/app/build.gradle.kts	(date 1744802797690)
+@@ -73,9 +73,11 @@
+     // ViewModel
+     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+ 
+-    //Vector drawable
+-    implementation("androidx.vectordrawable:vectordrawable:1.2.0")
+-    implementation("io.coil-kt:coil-compose:2.4.0")
+-    implementation("io.coil-kt:coil-svg:2.4.0")
++    // Firebase
++    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
++    implementation("com.google.firebase:firebase-auth")
++
++    // Google Services
++    implementation("com.google.android.gms:play-services-auth:21.3.0")
+ 
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/app/gmao_machines/ui/viewModel/OnboardingViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.app.gmao_machines.ui.viewModel\r\n\r\nimport android.app.Application\r\nimport androidx.compose.runtime.State\r\nimport androidx.compose.runtime.mutableIntStateOf\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.lifecycle.AndroidViewModel\r\nimport com.app.gmao_machines.models.OnboardingPref\r\nimport kotlinx.coroutines.flow.MutableStateFlow\r\nimport kotlinx.coroutines.flow.StateFlow\r\nimport kotlinx.coroutines.flow.asStateFlow\r\n\r\nclass OnboardingViewModel(application: Application) : AndroidViewModel(application) {\r\n    private val onboardingPreferences = OnboardingPref(application)\r\n\r\n    private val _currentPage = mutableIntStateOf(0)\r\n    val currentPage: State<Int> = _currentPage\r\n\r\n    // Add a state flow to indicate when onboarding is complete\r\n    private val _isComplete = mutableStateOf(onboardingPreferences.isOnboardingCompleted())\r\n    val isComplete: State<Boolean> = _isComplete\r\n\r\n    // Total number of onboarding pages\r\n    val totalPages = 3\r\n\r\n    // Function to navigate to the next | previous page\r\n    fun nextPage() {\r\n        if (_currentPage.intValue < totalPages - 1) {\r\n            _currentPage.intValue = _currentPage.intValue + 1\r\n        }\r\n    }\r\n    fun previousPage() {\r\n        if (_currentPage.intValue > 0) {\r\n            _currentPage.intValue = _currentPage.intValue - 1\r\n        }\r\n    }\r\n\r\n    // Jump to a specific page\r\n    fun goToPage(page: Int) {\r\n        if (page in 0 until totalPages) {\r\n            _currentPage.intValue = page\r\n        }\r\n    }\r\n\r\n    // Function to check if onboarding is completed\r\n    fun isOnboardingCompleted(): Boolean {\r\n        return onboardingPreferences.isOnboardingCompleted()\r\n    }\r\n\r\n    // Function to mark onboarding as completed\r\n    fun completeOnboarding() {\r\n        onboardingPreferences.setOnboardingCompleted(true)\r\n        _isComplete.value = true\r\n    }\r\n\r\n    // Function to check if this is the last page\r\n    fun isLastPage(): Boolean {\r\n        return _currentPage.intValue == totalPages - 1\r\n    }\r\n\r\n    // Function to check if this is the first page\r\n    fun isFirstPage(): Boolean {\r\n        return _currentPage.intValue == 0\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/app/gmao_machines/ui/viewModel/OnboardingViewModel.kt b/app/src/main/java/com/app/gmao_machines/ui/viewModel/OnboardingViewModel.kt
+--- a/app/src/main/java/com/app/gmao_machines/ui/viewModel/OnboardingViewModel.kt	(revision c5f1ad8d4185fe77c3ad36593f17a9c06beb302a)
++++ b/app/src/main/java/com/app/gmao_machines/ui/viewModel/OnboardingViewModel.kt	(date 1744797816734)
+@@ -6,9 +6,6 @@
+ import androidx.compose.runtime.mutableStateOf
+ import androidx.lifecycle.AndroidViewModel
+ import com.app.gmao_machines.models.OnboardingPref
+-import kotlinx.coroutines.flow.MutableStateFlow
+-import kotlinx.coroutines.flow.StateFlow
+-import kotlinx.coroutines.flow.asStateFlow
+ 
+ class OnboardingViewModel(application: Application) : AndroidViewModel(application) {
+     private val onboardingPreferences = OnboardingPref(application)
