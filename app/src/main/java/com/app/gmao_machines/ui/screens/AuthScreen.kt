@@ -3,6 +3,12 @@ package com.app.gmao_machines.ui.screens
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -12,15 +18,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.models.AuthUiState
 import com.app.gmao_machines.ui.components.RegisterContent
 import com.app.gmao_machines.ui.components.SignInContent
 import com.app.gmao_machines.ui.viewModel.AuthViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(
     onAuthSuccess: () -> Unit,
@@ -28,7 +39,8 @@ fun AuthScreen(
 ) {
     var isSignIn by remember { mutableStateOf(true) }
 
-    val uiState = viewModel.uiState.collectAsState().value
+    // Using collectAsStateWithLifecycle for better lifecycle awareness
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     // Google Sign-In launcher
@@ -42,94 +54,166 @@ fun AuthScreen(
 
     // Handle UI state changes
     LaunchedEffect(uiState) {
-        when (uiState) {
-            is AuthUiState.Success -> {
-                onAuthSuccess()
-            }
-            else -> {} // Handle other states as needed
+        if (uiState is AuthUiState.Success) {
+            onAuthSuccess()
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Title
-        Text(
-            text = if (isSignIn) "Welcome back!" else "Register",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 16.dp, bottom = 24.dp)
-        )
-
-        // Tab buttons for switching between Sign In and Register
-        TabRow(
+    Scaffold{ paddingValues ->
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp)),
-            tabs = {
-                OutlinedButton(
-                    onClick = { isSignIn = true },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (isSignIn) Color.LightGray else Color.White
-                    ),
-                    shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
-                ) {
-                    Text("Sign In")
-                }
-
-                OutlinedButton(
-                    onClick = { isSignIn = false },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (!isSignIn) Color.LightGray else Color.White
-                    ),
-                    shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
-                ) {
-                    Text("Register")
-                }
-            },
-            selectedTabIndex = if (isSignIn) 0 else 1,
-            containerColor = Color.Transparent,
-            contentColor = Color.Black,
-            indicator = {},
-            divider = {}
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isSignIn) {
-            SignInContent(
-                viewModel = viewModel,
-                onGoogleSignIn = {
-                    googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
-                }
-            )
-        } else {
-            RegisterContent(viewModel = viewModel)
-        }
-
-        // Loading indicator and error handling
-        when (uiState) {
-            is AuthUiState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            }
-            is AuthUiState.Error -> {
-                val errorMessage = (uiState as AuthUiState.Error).message
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Welcome text
                 Text(
-                    text = errorMessage,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
+                    text = if (isSignIn) "Welcome back!" else "Create an account",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .padding(top = 8.dp, bottom = 24.dp)
+                        .semantics { contentDescription = "Authentication screen title" }
                 )
+
+                // Tab buttons for switching between Sign In and Register
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(28.dp)),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    tonalElevation = 2.dp
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(4.dp)
+                    ) {
+                        val tabModifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+
+                        // Sign In tab
+                        TabButton(
+                            text = "Sign In",
+                            isSelected = isSignIn,
+                            onClick = { isSignIn = true },
+                            modifier = tabModifier
+                        )
+
+                        // Register tab
+                        TabButton(
+                            text = "Register",
+                            isSelected = !isSignIn,
+                            onClick = { isSignIn = false },
+                            modifier = tabModifier
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Content with animation
+                AnimatedContent(
+                    targetState = isSignIn,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(300)) togetherWith
+                                fadeOut(animationSpec = tween(300))
+                    },
+                    label = "Auth content animation"
+                ) { isSignInState ->
+                    if (isSignInState) {
+                        SignInContent(
+                            viewModel = viewModel,
+                            onGoogleSignIn = {
+                                googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
+                            }
+                        )
+                    } else {
+                        RegisterContent(viewModel = viewModel)
+                    }
+                }
             }
-            else -> {} // Handle other states as needed
+
+            // Loading and error states
+            when (uiState) {
+                is AuthUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            color = MaterialTheme.colorScheme.surface,
+                            tonalElevation = 8.dp,
+                            shadowElevation = 8.dp
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
+                }
+                is AuthUiState.Error -> {
+                    val errorMessage = (uiState as AuthUiState.Error).message
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Snackbar(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.BottomCenter),
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        ) {
+                            Text(text = errorMessage)
+                        }
+                    }
+                }
+                else -> {} // Other states
+            }
+        }
+    }
+}
+
+@Composable
+private fun TabButton(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                fontSize = 16.sp
+            )
         }
     }
 }
