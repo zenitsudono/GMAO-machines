@@ -59,12 +59,24 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private var googleSignInClient: GoogleSignInClient
 
     init {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("819982504390-d5pvdsgst01medghuarbi02jcotlr6fd.apps.googleusercontent.com")
-            .requestEmail()
-            .build()
-
-        googleSignInClient = GoogleSignIn.getClient(application, gso)
+        try {
+            // Create a complete GSO with full OAuth configuration
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(application.getString(com.app.gmao_machines.R.string.default_web_client_id))
+                .requestEmail()
+                .requestProfile()
+                .requestId()
+                .build()
+            
+            // Force account selection each time
+            googleSignInClient = GoogleSignIn.getClient(application, gso)
+            googleSignInClient.signOut() // Clear any previous sign-in state
+            
+            Log.d("AuthViewModel", "Successfully initialized GoogleSignInClient")
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Error initializing GoogleSignInClient", e)
+            throw e
+        }
     }
 
     // Field updaters
@@ -158,31 +170,65 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     // Google sign-in related methods
     fun getGoogleSignInIntent(): Intent {
+        Log.d("AuthViewModel", "Getting Google sign-in intent")
+        // Sign out to always show the account picker
+        googleSignInClient.signOut()
         return googleSignInClient.signInIntent
     }
 
     fun handleGoogleSignInResult(result: ActivityResult) {
+        Log.d("AuthViewModel", "Handling Google sign-in result, resultCode: ${result.resultCode}")
         try {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            val account = task.getResult(ApiException::class.java)
+            if (result.data == null) {
+                Log.e("AuthViewModel", "Google sign-in result data is null")
+                _uiState.value = AuthUiState.Error("Sign-in failed: No data returned")
+                return
+            }
 
-            // Got Google account, now authenticate with your backend
-            account?.idToken?.let { idToken ->
-                viewModelScope.launch {
-                    try {
-                        _uiState.value = AuthUiState.Loading
-                        val user = repository.signInWithGoogle(idToken)
-                        _uiState.value = AuthUiState.Success(user)
-                    } catch (e: Exception) {
-                        _uiState.value = AuthUiState.Error(e.message ?: "Google sign-in failed")
-                    }
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            if (!task.isSuccessful) {
+                Log.e("AuthViewModel", "Google sign-in task was not successful")
+                _uiState.value = AuthUiState.Error("Sign-in failed: Authentication task failed")
+                return
+            }
+
+            val account = task.getResult(ApiException::class.java)
+            if (account == null) {
+                Log.e("AuthViewModel", "Google sign-in account is null")
+                _uiState.value = AuthUiState.Error("Sign-in failed: No account returned")
+                return
+            }
+
+            Log.d("AuthViewModel", "Got Google account, ID: ${account.id}, Email: ${account.email}")
+            
+            // Check token
+            val idToken = account.idToken
+            if (idToken.isNullOrBlank()) {
+                Log.e("AuthViewModel", "Google sign-in returned null or blank ID token")
+                _uiState.value = AuthUiState.Error("Sign-in failed: Missing authentication token")
+                return
+            }
+            
+            Log.d("AuthViewModel", "Got ID token of length ${idToken.length}, authenticating with Firebase")
+            _uiState.value = AuthUiState.Loading
+            
+            viewModelScope.launch {
+                try {
+                    Log.d("AuthViewModel", "Calling repository signInWithGoogle")
+                    val user = repository.signInWithGoogle(idToken)
+                    Log.d("AuthViewModel", "Successfully signed in with Google, user: ${user.email}")
+                    _uiState.value = AuthUiState.Success(user)
+                } catch (e: Exception) {
+                    Log.e("AuthViewModel", "Error signing in with Google", e)
+                    _uiState.value = AuthUiState.Error(e.message ?: "Google sign-in failed")
                 }
-            } ?: run {
-                _uiState.value = AuthUiState.Error("Google sign-in failed: No ID token")
             }
         } catch (e: ApiException) {
-            _uiState.value = AuthUiState.Error("Google sign-in failed: ${e.statusCode}")
-            Log.e("AuthViewModel", "Google sign-in failed", e)
+            Log.e("AuthViewModel", "Google sign-in API Exception: code=${e.statusCode}, message=${e.message}", e)
+            _uiState.value = AuthUiState.Error("Google sign-in failed: code ${e.statusCode}")
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Unexpected exception during Google sign-in", e)
+            _uiState.value = AuthUiState.Error("Google sign-in failed: ${e.message}")
         }
     }
 

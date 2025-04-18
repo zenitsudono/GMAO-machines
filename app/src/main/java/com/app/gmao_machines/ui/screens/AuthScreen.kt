@@ -1,6 +1,8 @@
 package com.app.gmao_machines.ui.screens
 
 import android.app.Activity
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -44,19 +46,57 @@ fun AuthScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // Google Sign-In launcher
+    // Google Sign-In launcher with better error handling
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.handleGoogleSignInResult(result)
+        Log.d("AuthScreen", "Google sign-in result received: ${result.resultCode}")
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                // Check if we have data in the result
+                if (result.data != null) {
+                    Log.d("AuthScreen", "Google sign-in successful, handling result")
+                    Toast.makeText(context, "Processing sign-in...", Toast.LENGTH_SHORT).show()
+                    viewModel.handleGoogleSignInResult(result)
+                } else {
+                    Log.e("AuthScreen", "Google sign-in resulted in null data")
+                    Toast.makeText(context, "Sign-in error: No data returned", Toast.LENGTH_LONG).show()
+                }
+            }
+            Activity.RESULT_CANCELED -> {
+                Log.w("AuthScreen", "Google sign-in cancelled by user")
+                Toast.makeText(context, "Sign-in cancelled", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("AuthScreen", "Google sign-in failed with unknown result code: ${result.resultCode}")
+                Toast.makeText(context, "Sign-in failed with code: ${result.resultCode}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
     // Handle UI state changes
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Success) {
-            onAuthSuccess()
+        Log.d("AuthScreen", "Auth UI state changed: $uiState")
+        when (uiState) {
+            is AuthUiState.Success -> {
+                Log.d("AuthScreen", "Authentication successful, navigating to main screen")
+                Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
+                onAuthSuccess()
+            }
+            is AuthUiState.Error -> {
+                Log.e("AuthScreen", "Authentication error: ${(uiState as AuthUiState.Error).message}")
+                Toast.makeText(
+                    context,
+                    "Authentication error: ${(uiState as AuthUiState.Error).message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            is AuthUiState.Loading -> {
+                Log.d("AuthScreen", "Authentication loading...")
+            }
+            else -> {
+                Log.d("AuthScreen", "Initial authentication state")
+            }
         }
     }
 

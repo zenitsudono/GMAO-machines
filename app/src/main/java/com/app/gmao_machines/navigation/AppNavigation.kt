@@ -1,5 +1,6 @@
 package com.app.gmao_machines.navigation
 
+import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,9 +18,18 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
     // Determine start destination based on user status
     val startDestination = remember {
         when {
-            !viewModel.isComplete.value -> "onboarding"
-            FirebaseAuth.getInstance().currentUser == null -> "auth"
-            else -> "main"
+            !viewModel.isComplete.value -> {
+                Log.d("AppNavigation", "Starting with onboarding screen")
+                "onboarding"
+            }
+            FirebaseAuth.getInstance().currentUser == null -> {
+                Log.d("AppNavigation", "User not authenticated, starting with auth screen")
+                "auth"
+            }
+            else -> {
+                Log.d("AppNavigation", "User already authenticated, starting with main screen")
+                "main"
+            }
         }
     }
     
@@ -27,6 +37,7 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
         composable("onboarding") {
             OnboardingScreen(viewModel = viewModel) {
                 // When onboarding is complete (Skip or Get Started pressed), go to auth
+                Log.d("AppNavigation", "Onboarding complete, navigating to auth")
                 navController.navigate("auth") {
                     // Clear the navigation stack to prevent going back
                     popUpTo(0) { inclusive = true }
@@ -37,6 +48,7 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
         composable("auth") {
             AuthScreen(
                 onAuthSuccess = {
+                    Log.d("AppNavigation", "Auth success, navigating to main")
                     navController.navigate("main") {
                         popUpTo("auth") { inclusive = true }
                     }
@@ -45,6 +57,7 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
         }
 
         composable("main") {
+            Log.d("AppNavigation", "Displaying main screen")
             MyApp()
         }
     }

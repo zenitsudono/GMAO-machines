@@ -262,7 +262,8 @@ fun SignInContent(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
                 elevation = CardDefaults.cardElevation(
-                    defaultElevation = 2.dp
+                    defaultElevation = 2.dp,
+                    pressedElevation = 6.dp
                 ),
                 border = BorderStroke(
                     width = 1.dp,
