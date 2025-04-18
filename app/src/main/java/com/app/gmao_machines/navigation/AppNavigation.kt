@@ -9,22 +9,21 @@ import androidx.navigation.compose.*
 import com.app.gmao_machines.ui.screens.*
 import com.app.gmao_machines.ui.viewModel.OnboardingViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
     val navController = rememberNavController()
     
-    // Observe onboarding state for reference
-    val isComplete by remember { viewModel.isComplete }
-    
-    NavHost(navController = navController, startDestination = "splash") {
-        composable("splash") {
-            SplashScreen {
-                navigateAfterSplash(navController, viewModel)
-            }
+    // Determine start destination based on user status
+    val startDestination = remember {
+        when {
+            !viewModel.isComplete.value -> "onboarding"
+            FirebaseAuth.getInstance().currentUser == null -> "auth"
+            else -> "main"
         }
-
+    }
+    
+    NavHost(navController = navController, startDestination = startDestination) {
         composable("onboarding") {
             OnboardingScreen(viewModel = viewModel) {
                 // When onboarding is complete (Skip or Get Started pressed), go to auth
@@ -55,41 +54,6 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
 fun MyApp() {
     MaterialTheme {
         MainScreen()
-    }
-}
-
-@Composable
-fun SplashScreen(onFinish: () -> Unit) {
-    // Add your splash animation/UI here
-    LaunchedEffect(Unit) {
-        delay(2000L) // 2 seconds splash delay
-        onFinish()
-    }
-}
-
-fun navigateAfterSplash(
-    navController: NavHostController,
-    onboardingViewModel: OnboardingViewModel
-) {
-    val isOnboardingComplete = onboardingViewModel.isComplete.value
-    val isUserAuthenticated = FirebaseAuth.getInstance().currentUser != null
-
-    when {
-        !isOnboardingComplete -> {
-            navController.navigate("onboarding") {
-                popUpTo("splash") { inclusive = true }
-            }
-        }
-        !isUserAuthenticated -> {
-            navController.navigate("auth") {
-                popUpTo("splash") { inclusive = true }
-            }
-        }
-        else -> {
-            navController.navigate("main") {
-                popUpTo("splash") { inclusive = true }
-            }
-        }
     }
 }
 

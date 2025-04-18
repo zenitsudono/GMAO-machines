@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Main app icon in the center -->
+    <item
+        android:gravity="center"
+        android:width="120dp"
+        android:height="120dp"
+        android:drawable="@drawable/animated_splash_loader" />
+        
+    <!-- Additional loading indicator at the bottom -->
+    <item android:gravity="bottom|center_horizontal"
+        android:bottom="80dp">
+        <animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+            <item>
+                <shape android:shape="rectangle">
+                    <size android:width="100dp" android:height="4dp" />
+                    <corners android:radius="2dp" />
+                    <gradient
+                        android:type="linear"
+                        android:startColor="#4CAF50"
+                        android:centerColor="#FFC107"
+                        android:endColor="#F44336"
+                        android:angle="0" />
+                </shape>
+            </item>
+        </animated-selector>
+    </item>
+    
+    <!-- Animated loading text indicator -->
+    <item android:gravity="bottom|center_horizontal"
+        android:bottom="60dp">
+        <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:drawable="@drawable/loading_text_1">
+            <target
+                android:name="*"
+                android:animation="@animator/fade_animation" />
+        </animated-vector>
+    </item>
+</layer-list> 

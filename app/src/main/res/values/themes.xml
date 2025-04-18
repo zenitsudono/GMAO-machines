@@ -4,14 +4,14 @@
     <style name="Theme.GMAOmachines" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <!-- Set completely transparent background -->
-        <item name="windowSplashScreenBackground">@android:color/transparent</item>
+        <!-- Set the splash screen background color -->
+        <item name="windowSplashScreenBackground">@color/white</item>
 
-        <!-- Use a 1x1 transparent pixel as the icon -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/transparent_pixel</item>
+        <!-- Use splash icon directly -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
 
-        <!-- Set duration to absolute minimum -->
-        <item name="windowSplashScreenAnimationDuration">1</item>
+        <!-- Set animation duration -->
+        <item name="windowSplashScreenAnimationDuration">1000</item>
 
         <!-- Theme to transition to -->
         <item name="postSplashScreenTheme">@style/Theme.GMAOmachines</item>

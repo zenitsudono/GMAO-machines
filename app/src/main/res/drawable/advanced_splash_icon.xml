@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Background circle that will pulse -->
+    <path
+        android:name="background_circle"
+        android:pathData="M50,50 m-45,0 a45,45 0 1,0 90,0 a45,45 0 1,0 -90,0"
+        android:fillColor="#1A4285F4"/>
+
+    <!-- Create a clipping mask for the icon -->
+    <clip-path
+        android:name="icon_clip"
+        android:pathData="M50,50 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0"/>
+        
+    <!-- This will display the splash_icon image inside the clip path -->
+    <path
+        android:name="icon_path"
+        android:pathData="M20,20 L80,20 L80,80 L20,80 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- Rotating loader segments -->
+    <path
+        android:name="loader_segment1"
+        android:pathData="M50,5 A45,45 0 0,1 81.5,18.5"
+        android:strokeColor="#4285F4"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+        
+    <path
+        android:name="loader_segment2"
+        android:pathData="M81.5,18.5 A45,45 0 0,1 95,50"
+        android:strokeColor="#DB4437"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+        
+    <path
+        android:name="loader_segment3"
+        android:pathData="M95,50 A45,45 0 0,1 81.5,81.5"
+        android:strokeColor="#F4B400"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+        
+    <path
+        android:name="loader_segment4"
+        android:pathData="M81.5,81.5 A45,45 0 0,1 50,95"
+        android:strokeColor="#0F9D58"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+        
+    <path
+        android:name="loader_segment5"
+        android:pathData="M50,95 A45,45 0 0,1 18.5,81.5"
+        android:strokeColor="#4285F4"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+</vector> 

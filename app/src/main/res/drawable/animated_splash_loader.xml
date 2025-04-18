@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/advanced_splash_icon">
+    
+    <!-- Pulse the background circle -->
+    <target
+        android:name="background_circle"
+        android:animation="@animator/pulse_animation" />
+    
+    <!-- Rotate the loader segments -->
+    <target
+        android:name="loader_segment1"
+        android:animation="@animator/rotate_animation" />
+        
+    <target
+        android:name="loader_segment2"
+        android:animation="@animator/rotate_animation" />
+        
+    <target
+        android:name="loader_segment3"
+        android:animation="@animator/rotate_animation" />
+        
+    <target
+        android:name="loader_segment4"
+        android:animation="@animator/rotate_animation" />
+        
+    <target
+        android:name="loader_segment5"
+        android:animation="@animator/rotate_animation" />
+</animated-vector> 
