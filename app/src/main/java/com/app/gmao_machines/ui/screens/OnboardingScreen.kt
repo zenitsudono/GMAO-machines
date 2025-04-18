@@ -97,12 +97,6 @@ fun OnboardingScreen(
         }
     }
 
-    LaunchedEffect(isComplete) {
-        if (isComplete) {
-            onComplete()
-        }
-    }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -244,8 +238,16 @@ fun OnboardingScreen(
                     isLastPage = viewModel.isLastPage(),
                     onPrevious = { viewModel.previousPage() },
                     onNext = { viewModel.nextPage() },
-                    onSkip = { viewModel.completeOnboarding() },
-                    onGetStarted = { viewModel.completeOnboarding() }
+                    onSkip = { 
+                        // Mark onboarding complete and go straight to auth
+                        viewModel.completeOnboarding()
+                        onComplete()
+                    },
+                    onGetStarted = { 
+                        // Mark onboarding complete and go straight to auth
+                        viewModel.completeOnboarding()
+                        onComplete()
+                    }
                 )
             }
         }

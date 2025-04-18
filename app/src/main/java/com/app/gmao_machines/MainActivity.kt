@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.app.gmao_machines.navigation.AppNavigation
-import com.app.gmao_machines.ui.screens.OnboardingScreen
 import com.app.gmao_machines.ui.theme.GMAOMachinesTheme
 import com.app.gmao_machines.ui.viewModel.OnboardingViewModel
 
@@ -23,13 +22,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GMAOMachinesTheme {
-                if (viewModel.isOnboardingCompleted()) {
-                    AppNavigation()
-                } else {
-                    OnboardingScreen(
-                        onComplete = { viewModel.completeOnboarding() }
-                    )
-                }
+                // Always use AppNavigation which handles all screens including onboarding
+                AppNavigation()
             }
         }
     }

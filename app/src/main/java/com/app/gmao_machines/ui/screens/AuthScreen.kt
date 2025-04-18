@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -59,86 +60,95 @@ fun AuthScreen(
         }
     }
 
-    Scaffold{ paddingValues ->
+    Scaffold { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                contentPadding = PaddingValues(bottom = 24.dp) // Add padding at the bottom for better UX when scrolling
             ) {
-                // Welcome text
-                Text(
-                    text = if (isSignIn) "Welcome back!" else "Create an account",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .padding(top = 8.dp, bottom = 24.dp)
-                        .semantics { contentDescription = "Authentication screen title" }
-                )
+                item {
+                    // Welcome text
+                    Text(
+                        text = if (isSignIn) "Welcome back!" else "Create an account",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .padding(top = 8.dp, bottom = 24.dp)
+                            .semantics { contentDescription = "Authentication screen title" }
+                    )
+                }
 
-                // Tab buttons for switching between Sign In and Register
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(28.dp)),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    tonalElevation = 2.dp
-                ) {
-                    Row(
+                item {
+                    // Tab buttons for switching between Sign In and Register
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
-                            .padding(4.dp)
+                            .clip(RoundedCornerShape(28.dp)),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        tonalElevation = 2.dp
                     ) {
-                        val tabModifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .padding(4.dp)
+                        ) {
+                            val tabModifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
 
-                        // Sign In tab
-                        TabButton(
-                            text = "Sign In",
-                            isSelected = isSignIn,
-                            onClick = { isSignIn = true },
-                            modifier = tabModifier
-                        )
+                            // Sign In tab
+                            TabButton(
+                                text = "Sign In",
+                                isSelected = isSignIn,
+                                onClick = { isSignIn = true },
+                                modifier = tabModifier
+                            )
 
-                        // Register tab
-                        TabButton(
-                            text = "Register",
-                            isSelected = !isSignIn,
-                            onClick = { isSignIn = false },
-                            modifier = tabModifier
-                        )
+                            // Register tab
+                            TabButton(
+                                text = "Register",
+                                isSelected = !isSignIn,
+                                onClick = { isSignIn = false },
+                                modifier = tabModifier
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
 
-                // Content with animation
-                AnimatedContent(
-                    targetState = isSignIn,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(300)) togetherWith
-                                fadeOut(animationSpec = tween(300))
-                    },
-                    label = "Auth content animation"
-                ) { isSignInState ->
-                    if (isSignInState) {
-                        SignInContent(
-                            viewModel = viewModel,
-                            onGoogleSignIn = {
-                                googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
-                            }
-                        )
-                    } else {
-                        RegisterContent(viewModel = viewModel)
+                item {
+                    // Content with animation
+                    AnimatedContent(
+                        targetState = isSignIn,
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(300)) togetherWith
+                                    fadeOut(animationSpec = tween(300))
+                        },
+                        label = "Auth content animation"
+                    ) { isSignInState ->
+                        if (isSignInState) {
+                            SignInContent(
+                                viewModel = viewModel,
+                                onGoogleSignIn = {
+                                    googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
+                                }
+                            )
+                        } else {
+                            RegisterContent(viewModel = viewModel)
+                        }
                     }
                 }
             }

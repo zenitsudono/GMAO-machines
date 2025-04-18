@@ -3,6 +3,7 @@ package com.app.gmao_machines.navigation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.app.gmao_machines.ui.screens.*
@@ -13,6 +14,10 @@ import kotlinx.coroutines.delay
 @Composable
 fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
     val navController = rememberNavController()
+    
+    // Observe onboarding state for reference
+    val isComplete by remember { viewModel.isComplete }
+    
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
             SplashScreen {
@@ -22,8 +27,10 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
 
         composable("onboarding") {
             OnboardingScreen(viewModel = viewModel) {
+                // When onboarding is complete (Skip or Get Started pressed), go to auth
                 navController.navigate("auth") {
-                    popUpTo("onboarding") { inclusive = true }
+                    // Clear the navigation stack to prevent going back
+                    popUpTo(0) { inclusive = true }
                 }
             }
         }
@@ -42,7 +49,6 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
             MyApp()
         }
     }
-
 }
 
 @Composable

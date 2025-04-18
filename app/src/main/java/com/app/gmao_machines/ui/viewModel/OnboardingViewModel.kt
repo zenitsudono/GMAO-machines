@@ -17,6 +17,10 @@ class OnboardingViewModel(application: Application) : AndroidViewModel(applicati
     private val _isComplete = mutableStateOf(onboardingPreferences.isOnboardingCompleted())
     val isComplete: State<Boolean> = _isComplete
 
+    // Add a state to indicate whether to skip authentication
+    private val _skipAuth = mutableStateOf(false)
+    val skipAuth: State<Boolean> = _skipAuth
+
     // Total number of onboarding pages
     val totalPages = 3
 
