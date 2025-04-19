@@ -308,15 +308,16 @@ fun SignInContent(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                
                 Text(
-                    text = "Register",
+                    text = " Register",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
-                        .padding(start = 4.dp)
-                        .clickable { onRegisterClick() }
+                        .clickable(onClick = onRegisterClick)
+                        .padding(start = 4.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                 )
             }
         }

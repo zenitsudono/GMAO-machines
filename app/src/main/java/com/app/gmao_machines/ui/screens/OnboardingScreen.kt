@@ -56,18 +56,18 @@ fun OnboardingScreen(
     // Define onboarding pages
     val pages = listOf(
         OnboardingPage(
-            title = "Bienvenue sur GMAO",
-            description = "Cette application vous aide à surveiller l'état de vos machines et à recevoir des alertes en temps réel en cas de problème.",
+            title = "Welcome to GMAO",
+            description = "This application helps you monitor the status of your machines and receive real-time alerts in case of a problem.",
             imageRes = R.drawable.firstonboarding
         ),
         OnboardingPage(
-            title = "Soyez alerté instantanément",
-            description = "Recevez des notifications dès qu'un problème est détecté sur une machine. Accédez à l'historique des interventions et planifiez les réparations efficacement.",
+            title = "Get alerted instantly",
+            description = "Receive notifications as soon as an issue is detected on a machine. Access the intervention history and plan repairs efficiently.",
             imageRes = R.drawable.secondonboarding
         ),
         OnboardingPage(
             title = "Get Started",
-            description = "You're all set! Start using the app now.",
+            description = "You're all set! Start using the app now and enjoy all the features it offers.",
             imageRes = R.drawable.lastonboarding
         )
     )
@@ -144,19 +144,20 @@ fun OnboardingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp)
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                pageSpacing = 8.dp
             ) { page ->
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp),
+                        .padding(4.dp),
                     shape = RoundedCornerShape(24.dp),
                     tonalElevation = 2.dp,
                     shadowElevation = 4.dp
                 ) {
                     OnboardingPageContent(
                         page = pages[page],
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(12.dp)
                     )
                 }
             }

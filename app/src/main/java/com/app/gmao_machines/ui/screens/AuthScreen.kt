@@ -184,10 +184,18 @@ fun AuthScreen(
                                 viewModel = viewModel,
                                 onGoogleSignIn = {
                                     googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
+                                },
+                                onRegisterClick = {
+                                    isSignIn = false
                                 }
                             )
                         } else {
-                            RegisterContent(viewModel = viewModel)
+                            RegisterContent(
+                                viewModel = viewModel,
+                                onSignInClick = {
+                                    isSignIn = true
+                                }
+                            )
                         }
                     }
                 }

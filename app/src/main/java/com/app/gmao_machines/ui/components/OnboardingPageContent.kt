@@ -7,7 +7,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +34,9 @@ fun OnboardingPageContent(page: OnboardingPage, modifier: Modifier = Modifier) {
     val imageVisible = remember { MutableTransitionState(false) }
     val titleVisible = remember { MutableTransitionState(false) }
     val descriptionVisible = remember { MutableTransitionState(false) }
+    
+    // Scroll state for long descriptions
+    val scrollState = rememberScrollState()
 
     // Sequence animations
     LaunchedEffect(page) {
@@ -45,10 +50,12 @@ fun OnboardingPageContent(page: OnboardingPage, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.Top
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        
         // Image Section
         AnimatedVisibility(
             visibleState = imageVisible,
@@ -58,12 +65,14 @@ fun OnboardingPageContent(page: OnboardingPage, modifier: Modifier = Modifier) {
                 painter = painterResource(id = page.imageRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(240.dp)
+                    .size(200.dp)
                     .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Fit
             )
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
+        
         // Title Section
         AnimatedVisibility(
             visibleState = titleVisible,
@@ -79,7 +88,9 @@ fun OnboardingPageContent(page: OnboardingPage, modifier: Modifier = Modifier) {
             )
         }
 
-        // Description Section - Now placed in a Card for better structure
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Description Section - Now with better spacing and guaranteed visibility
         AnimatedVisibility(
             visibleState = descriptionVisible,
             enter = fadeIn(tween(600)) + slideInVertically { it / 5 }
@@ -101,9 +112,12 @@ fun OnboardingPageContent(page: OnboardingPage, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(16.dp)
+                    lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.2,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
                 )
             }
         }
+        
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
