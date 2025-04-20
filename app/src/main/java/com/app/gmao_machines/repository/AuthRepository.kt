@@ -75,4 +75,28 @@ class AuthRepository {
             throw Exception("Google authentication failed: ${e.message}")
         }
     }
+    
+    /**
+     * Sends a password reset email to the specified email address
+     * @param email The email address to send the password reset link to
+     * @return Boolean indicating if the reset email was sent successfully
+     * @throws Exception if there's an error sending the email
+     */
+    suspend fun sendPasswordResetEmail(email: String): Boolean {
+        Log.d("AuthRepository", "Sending password reset email to $email")
+        
+        if (email.isBlank()) {
+            Log.e("AuthRepository", "Email is blank")
+            throw Exception("Email address cannot be empty")
+        }
+        
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Log.d("AuthRepository", "Password reset email sent successfully")
+            true
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Error sending password reset email: ${e.message}", e)
+            throw Exception("Failed to send password reset email: ${e.message}")
+        }
+    }
 }

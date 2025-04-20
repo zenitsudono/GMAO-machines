@@ -282,4 +282,43 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             _uiState.value = AuthUiState.Initial
         }
     }
+    
+    /**
+     * Initiates the forgot password flow by sending a password reset email to the user
+     * Uses the current email if available or the provided email
+     */
+    fun forgotPassword(providedEmail: String = "") {
+        val emailToUse = providedEmail.ifBlank { email.value }
+        
+        // Validate email first
+        if (emailToUse.isBlank()) {
+            _errorMessage.value = "Please enter your email address"
+            _uiState.value = AuthUiState.Error(_errorMessage.value!!)
+            return
+        }
+        
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailToUse).matches()) {
+            _errorMessage.value = "Please enter a valid email address"
+            _uiState.value = AuthUiState.Error(_errorMessage.value!!)
+            return
+        }
+        
+        // Show loading state
+        _uiState.value = AuthUiState.Loading
+        
+        viewModelScope.launch {
+            try {
+                Log.d("AuthViewModel", "Sending password reset email to $emailToUse")
+                val result = repository.sendPasswordResetEmail(emailToUse)
+                if (result) {
+                    _uiState.value = AuthUiState.PasswordResetSent(emailToUse)
+                } else {
+                    _uiState.value = AuthUiState.Error("Failed to send password reset email")
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error in forgotPassword: ${e.message}", e)
+                _uiState.value = AuthUiState.Error(e.message ?: "Failed to send password reset email")
+            }
+        }
+    }
 }

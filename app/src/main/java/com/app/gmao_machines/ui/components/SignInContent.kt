@@ -36,11 +36,15 @@ import com.app.gmao_machines.ui.viewModel.AuthViewModel
 fun SignInContent(
     viewModel: AuthViewModel,
     onGoogleSignIn: () -> Unit,
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: () -> Unit = {},
+    onForgotPassword: (String) -> Unit = { viewModel.forgotPassword() }
 ) {
     val email = viewModel.email.collectAsState()
     val password = viewModel.password.collectAsState()
     val passwordVisible = viewModel.passwordVisible.collectAsState()
+    
+    // State for forgot password dialog
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
     // Create animated states
     val animationProgress = remember { Animatable(0f) }
@@ -53,6 +57,18 @@ fun SignInContent(
 
     // Email validation state
     val isEmailValid = email.value.contains("@") && email.value.contains(".")
+    
+    // Show forgot password dialog if needed
+    if (showForgotPasswordDialog) {
+        ForgotPasswordDialog(
+            initialEmail = email.value,
+            onDismiss = { showForgotPasswordDialog = false },
+            onSubmit = { emailToReset ->
+                onForgotPassword(emailToReset)
+                showForgotPasswordDialog = false
+            }
+        )
+    }
 
     Box {
         Column(
@@ -188,7 +204,7 @@ fun SignInContent(
                 modifier = Modifier
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(4.dp))
-                    .clickable { /* Handle forgot password */ }
+                    .clickable { showForgotPasswordDialog = true }
                     .padding(vertical = 4.dp, horizontal = 8.dp)
             )
 

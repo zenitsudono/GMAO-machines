@@ -91,6 +91,17 @@ fun AuthScreen(
                     Toast.LENGTH_LONG
                 ).show()
             }
+            is AuthUiState.PasswordResetSent -> {
+                val email = (uiState as AuthUiState.PasswordResetSent).email
+                Log.d("AuthScreen", "Password reset email sent to $email")
+                Toast.makeText(
+                    context,
+                    "Password reset instructions sent to $email",
+                    Toast.LENGTH_LONG
+                ).show()
+                // Reset UI state after showing toast
+                viewModel.clearError()
+            }
             is AuthUiState.Loading -> {
                 Log.d("AuthScreen", "Authentication loading...")
             }
@@ -187,6 +198,9 @@ fun AuthScreen(
                                 },
                                 onRegisterClick = {
                                     isSignIn = false
+                                },
+                                onForgotPassword = { email ->
+                                    viewModel.forgotPassword(email)
                                 }
                             )
                         } else {
