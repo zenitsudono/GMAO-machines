@@ -16,7 +16,23 @@ class AuthRepository {
         password: String
     ): Boolean {
         val result = auth.createUserWithEmailAndPassword(email, password).await()
-        return result.user != null
+        val user = result.user
+        
+        if (user != null) {
+            // Send email verification
+            user.sendEmailVerification().await()
+            
+            // Update display name (optional)
+            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                .setDisplayName("$firstName $lastName")
+                .build()
+            
+            user.updateProfile(profileUpdates).await()
+            
+            return true
+        }
+        
+        return false
     }
 
     suspend fun signInUser(email: String, password: String): User {
@@ -97,6 +113,35 @@ class AuthRepository {
         } catch (e: Exception) {
             Log.e("AuthRepository", "Error sending password reset email: ${e.message}", e)
             throw Exception("Failed to send password reset email: ${e.message}")
+        }
+    }
+
+    /**
+     * Checks if the current user's email is verified
+     * @return Boolean indicating if email is verified
+     */
+    suspend fun isEmailVerified(): Boolean {
+        val currentUser = auth.currentUser ?: return false
+        
+        // Reload user to get the most recent status
+        currentUser.reload().await()
+        
+        return currentUser.isEmailVerified
+    }
+    
+    /**
+     * Resends the verification email to the current user
+     * @return Boolean indicating if the email was sent successfully
+     */
+    suspend fun resendVerificationEmail(): Boolean {
+        val currentUser = auth.currentUser ?: throw Exception("No user is currently signed in")
+        
+        return try {
+            currentUser.sendEmailVerification().await()
+            true
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Error sending verification email: ${e.message}", e)
+            throw Exception("Failed to send verification email: ${e.message}")
         }
     }
 }

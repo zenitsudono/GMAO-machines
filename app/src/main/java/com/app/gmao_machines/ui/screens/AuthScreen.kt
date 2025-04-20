@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.models.AuthUiState
+import com.app.gmao_machines.ui.components.EmailVerificationDialog
 import com.app.gmao_machines.ui.components.RegisterContent
+import com.app.gmao_machines.ui.components.RegistrationSuccessDialog
 import com.app.gmao_machines.ui.components.SignInContent
 import com.app.gmao_machines.ui.viewModel.AuthViewModel
 
@@ -45,7 +47,12 @@ fun AuthScreen(
     // Using collectAsStateWithLifecycle for better lifecycle awareness
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
+    
+    // State for dialogs
+    var showEmailVerificationDialog by remember { mutableStateOf(false) }
+    var showRegistrationSuccessDialog by remember { mutableStateOf(false) }
+    var verificationEmail by remember { mutableStateOf("") }
+    
     // Google Sign-In launcher with better error handling
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -102,6 +109,29 @@ fun AuthScreen(
                 // Reset UI state after showing toast
                 viewModel.clearError()
             }
+            is AuthUiState.VerificationEmailSent -> {
+                val email = (uiState as AuthUiState.VerificationEmailSent).email
+                Log.d("AuthScreen", "Verification email resent to $email")
+                Toast.makeText(
+                    context,
+                    "Verification email resent to $email",
+                    Toast.LENGTH_LONG
+                ).show()
+                viewModel.clearError()
+            }
+            is AuthUiState.RegistrationSuccess -> {
+                val email = (uiState as AuthUiState.RegistrationSuccess).email
+                Log.d("AuthScreen", "Registration successful, email verification required for $email")
+                verificationEmail = email
+                showRegistrationSuccessDialog = true
+                viewModel.clearError()
+            }
+            is AuthUiState.VerificationRequired -> {
+                val email = (uiState as AuthUiState.VerificationRequired).email
+                Log.d("AuthScreen", "Email verification required for $email")
+                verificationEmail = email
+                showEmailVerificationDialog = true
+            }
             is AuthUiState.Loading -> {
                 Log.d("AuthScreen", "Authentication loading...")
             }
@@ -109,6 +139,36 @@ fun AuthScreen(
                 Log.d("AuthScreen", "Initial authentication state")
             }
         }
+    }
+
+    // Show the appropriate dialogs based on state
+    if (showEmailVerificationDialog) {
+        EmailVerificationDialog(
+            email = verificationEmail,
+            onDismiss = { showEmailVerificationDialog = false },
+            onResendEmail = { 
+                viewModel.resendVerificationEmail()
+                showEmailVerificationDialog = false
+            },
+            onSignIn = {
+                showEmailVerificationDialog = false
+                viewModel.signIn()
+            }
+        )
+    }
+    
+    if (showRegistrationSuccessDialog) {
+        RegistrationSuccessDialog(
+            email = verificationEmail,
+            onDismiss = { 
+                showRegistrationSuccessDialog = false
+                isSignIn = true // Switch to sign in screen
+            },
+            onGoToSignIn = {
+                showRegistrationSuccessDialog = false
+                isSignIn = true // Switch to sign in screen
+            }
+        )
     }
 
     Scaffold { paddingValues ->

@@ -132,13 +132,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 )
 
                 if (result) {
-                    _uiState.value = AuthUiState.Success(
-                        User(
-                            email = email.value,
-                            firstName = firstName.value,
-                            lastName = lastName.value
-                        )
-                    )
+                    // Show registration success with verification required
+                    _uiState.value = AuthUiState.RegistrationSuccess(email.value)
                 } else {
                     _uiState.value = AuthUiState.Error("Registration failed. Please try again.")
                 }
@@ -161,7 +156,16 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val user = repository.signInUser(email.value, password.value)
-                _uiState.value = AuthUiState.Success(user)
+                
+                // Check if email is verified
+                val isVerified = repository.isEmailVerified()
+                
+                if (isVerified) {
+                    _uiState.value = AuthUiState.Success(user)
+                } else {
+                    // Email not verified, prompt user to verify
+                    _uiState.value = AuthUiState.VerificationRequired(email.value)
+                }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState.Error(e.message ?: "Unknown error occurred")
             }
@@ -318,6 +322,28 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Error in forgotPassword: ${e.message}", e)
                 _uiState.value = AuthUiState.Error(e.message ?: "Failed to send password reset email")
+            }
+        }
+    }
+
+    /**
+     * Resends the verification email to the current user's email address
+     */
+    fun resendVerificationEmail() {
+        _uiState.value = AuthUiState.Loading
+        
+        viewModelScope.launch {
+            try {
+                val result = repository.resendVerificationEmail()
+                
+                if (result) {
+                    _uiState.value = AuthUiState.VerificationEmailSent(email.value)
+                } else {
+                    _uiState.value = AuthUiState.Error("Failed to send verification email")
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error sending verification email: ${e.message}", e)
+                _uiState.value = AuthUiState.Error(e.message ?: "Failed to send verification email")
             }
         }
     }
