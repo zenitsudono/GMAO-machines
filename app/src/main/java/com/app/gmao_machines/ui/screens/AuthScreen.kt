@@ -47,7 +47,7 @@ fun AuthScreen(
     // Using collectAsStateWithLifecycle for better lifecycle awareness
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    
+
     // State for dialogs
     var showEmailVerificationDialog by remember { mutableStateOf(false) }
     var showRegistrationSuccessDialog by remember { mutableStateOf(false) }
@@ -64,7 +64,7 @@ fun AuthScreen(
                 if (result.data != null) {
                     Log.d("AuthScreen", "Google sign-in successful, handling result")
                     Toast.makeText(context, "Processing sign-in...", Toast.LENGTH_SHORT).show()
-                    viewModel.handleGoogleSignInResult(result)
+            viewModel.handleGoogleSignInResult(result)
                 } else {
                     Log.e("AuthScreen", "Google sign-in resulted in null data")
                     Toast.makeText(context, "Sign-in error: No data returned", Toast.LENGTH_LONG).show()
@@ -88,7 +88,7 @@ fun AuthScreen(
             is AuthUiState.Success -> {
                 Log.d("AuthScreen", "Authentication successful, navigating to main screen")
                 Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
-                onAuthSuccess()
+            onAuthSuccess()
             }
             is AuthUiState.Error -> {
                 Log.e("AuthScreen", "Authentication error: ${(uiState as AuthUiState.Error).message}")

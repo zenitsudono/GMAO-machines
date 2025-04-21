@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.gmao_machines.data.User
 import com.app.gmao_machines.models.AuthUiState
 import com.app.gmao_machines.repository.AuthRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -111,6 +110,16 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     fun toggleConfirmPasswordVisibility() {
         _confirmPasswordVisible.value = !_confirmPasswordVisible.value
     }
+    
+    /**
+     * Clears any error messages and resets the UI state if it's currently in an error state
+     */
+    fun clearError() {
+        _errorMessage.value = null
+        if (_uiState.value is AuthUiState.Error) {
+            _uiState.value = AuthUiState.Initial
+        }
+    }
 
     // Login and Registration methods
     fun register() {
@@ -181,154 +190,54 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun handleGoogleSignInResult(result: ActivityResult) {
-        Log.d("AuthViewModel", "Handling Google sign-in result, resultCode: ${result.resultCode}")
+        _uiState.value = AuthUiState.Loading
+        
         try {
-            if (result.data == null) {
-                Log.e("AuthViewModel", "Google sign-in result data is null")
-                _uiState.value = AuthUiState.Error("Sign-in failed: No data returned")
-                return
-            }
-
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            if (!task.isSuccessful) {
-                Log.e("AuthViewModel", "Google sign-in task was not successful")
-                _uiState.value = AuthUiState.Error("Sign-in failed: Authentication task failed")
-                return
-            }
-
             val account = task.getResult(ApiException::class.java)
-            if (account == null) {
-                Log.e("AuthViewModel", "Google sign-in account is null")
-                _uiState.value = AuthUiState.Error("Sign-in failed: No account returned")
-                return
-            }
-
-            Log.d("AuthViewModel", "Got Google account, ID: ${account.id}, Email: ${account.email}")
             
-            // Check token
-            val idToken = account.idToken
-            if (idToken.isNullOrBlank()) {
-                Log.e("AuthViewModel", "Google sign-in returned null or blank ID token")
-                _uiState.value = AuthUiState.Error("Sign-in failed: Missing authentication token")
-                return
-            }
-            
-            Log.d("AuthViewModel", "Got ID token of length ${idToken.length}, authenticating with Firebase")
-            _uiState.value = AuthUiState.Loading
-            
+            // Got Google account, now authenticate with Firebase
             viewModelScope.launch {
                 try {
-                    Log.d("AuthViewModel", "Calling repository signInWithGoogle")
-                    val user = repository.signInWithGoogle(idToken)
-                    Log.d("AuthViewModel", "Successfully signed in with Google, user: ${user.email}")
+                    val user = repository.signInWithGoogle(account.idToken!!)
                     _uiState.value = AuthUiState.Success(user)
                 } catch (e: Exception) {
-                    Log.e("AuthViewModel", "Error signing in with Google", e)
-                    _uiState.value = AuthUiState.Error(e.message ?: "Google sign-in failed")
+                    Log.e("AuthViewModel", "Firebase Auth with Google failed", e)
+                    _uiState.value = AuthUiState.Error(e.message ?: "Google authentication failed")
                 }
             }
         } catch (e: ApiException) {
-            Log.e("AuthViewModel", "Google sign-in API Exception: code=${e.statusCode}, message=${e.message}", e)
-            _uiState.value = AuthUiState.Error("Google sign-in failed: code ${e.statusCode}")
+            Log.e("AuthViewModel", "Google sign in failed", e)
+            _uiState.value = AuthUiState.Error("Google sign-in failed: ${e.statusCode}")
         } catch (e: Exception) {
-            Log.e("AuthViewModel", "Unexpected exception during Google sign-in", e)
+            Log.e("AuthViewModel", "Unknown error in Google sign in", e)
             _uiState.value = AuthUiState.Error("Google sign-in failed: ${e.message}")
         }
     }
-
-    private fun validateRegistrationFields(): Boolean {
-        when {
-            firstName.value.isBlank() -> {
-                _errorMessage.value = "First name cannot be empty"
-                return false
-            }
-            lastName.value.isBlank() -> {
-                _errorMessage.value = "Last name cannot be empty"
-                return false
-            }
-            email.value.isBlank() -> {
-                _errorMessage.value = "Email cannot be empty"
-                return false
-            }
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches() -> {
-                _errorMessage.value = "Invalid email format"
-                return false
-            }
-            password.value.isBlank() -> {
-                _errorMessage.value = "Password cannot be empty"
-                return false
-            }
-            !isPasswordValid(password.value) -> {
-                _errorMessage.value = "Password must be at least 8 characters with uppercase, lowercase, number, and special character"
-                return false
-            }
-            confirmPassword.value != password.value -> {
-                _errorMessage.value = "Passwords do not match"
-                return false
-            }
-            !termsAccepted.value -> {
-                _errorMessage.value = "You must accept the Terms of Service and Privacy Policy"
-                return false
-            }
-            else -> return true
-        }
-    }
-
-    private fun isPasswordValid(password: String): Boolean {
-        // Minimum 8 characters, at least one uppercase, one lowercase, one number, one special character
-        val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$"
-        return password.matches(passwordPattern.toRegex())
-    }
-
-    fun clearError() {
-        _errorMessage.value = null
-        if (_uiState.value is AuthUiState.Error) {
-            _uiState.value = AuthUiState.Initial
-        }
-    }
     
-    /**
-     * Initiates the forgot password flow by sending a password reset email to the user
-     * Uses the current email if available or the provided email
-     */
-    fun forgotPassword(providedEmail: String = "") {
-        val emailToUse = providedEmail.ifBlank { email.value }
-        
-        // Validate email first
-        if (emailToUse.isBlank()) {
-            _errorMessage.value = "Please enter your email address"
-            _uiState.value = AuthUiState.Error(_errorMessage.value!!)
+    fun forgotPassword(email1: String) {
+        if (email.value.isBlank()) {
+            _uiState.value = AuthUiState.Error("Please enter your email address")
             return
         }
         
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailToUse).matches()) {
-            _errorMessage.value = "Please enter a valid email address"
-            _uiState.value = AuthUiState.Error(_errorMessage.value!!)
-            return
-        }
-        
-        // Show loading state
         _uiState.value = AuthUiState.Loading
         
         viewModelScope.launch {
             try {
-                Log.d("AuthViewModel", "Sending password reset email to $emailToUse")
-                val result = repository.sendPasswordResetEmail(emailToUse)
+                val result = repository.sendPasswordResetEmail(email.value)
+                
                 if (result) {
-                    _uiState.value = AuthUiState.PasswordResetSent(emailToUse)
+                    _uiState.value = AuthUiState.PasswordResetSent(email.value)
                 } else {
                     _uiState.value = AuthUiState.Error("Failed to send password reset email")
                 }
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error in forgotPassword: ${e.message}", e)
                 _uiState.value = AuthUiState.Error(e.message ?: "Failed to send password reset email")
             }
         }
     }
-
-    /**
-     * Resends the verification email to the current user's email address
-     */
+    
     fun resendVerificationEmail() {
         _uiState.value = AuthUiState.Loading
         
@@ -346,5 +255,45 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.value = AuthUiState.Error(e.message ?: "Failed to send verification email")
             }
         }
+    }
+    
+    private fun validateRegistrationFields(): Boolean {
+        // Check first name
+        if (firstName.value.isBlank()) {
+            _errorMessage.value = "First name cannot be empty"
+            return false
+        }
+        
+        // Check last name
+        if (lastName.value.isBlank()) {
+            _errorMessage.value = "Last name cannot be empty"
+            return false
+        }
+        
+        // Check email
+        if (email.value.isBlank() || !email.value.contains("@") || !email.value.contains(".")) {
+            _errorMessage.value = "Please enter a valid email address"
+            return false
+        }
+        
+        // Check password
+        if (password.value.length < 6) {
+            _errorMessage.value = "Password must be at least 6 characters"
+            return false
+        }
+        
+        // Check password confirmation
+        if (password.value != confirmPassword.value) {
+            _errorMessage.value = "Passwords do not match"
+            return false
+        }
+        
+        // Check terms acceptance
+        if (!termsAccepted.value) {
+            _errorMessage.value = "You must accept the terms and conditions"
+            return false
+        }
+        
+        return true
     }
 }

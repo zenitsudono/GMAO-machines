@@ -224,10 +224,10 @@ fun EnhancedSplashScreen(onSplashFinished: () -> Unit) {
 
     val fourthDotAlpha by infiniteTransition.animateFloat(
         initialValue = 0.2f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
             animation = tween(600, easing = CubicBezierEasing(0.2f, 0.0f, 0.8f, 1.0f), delayMillis = 225),
-            repeatMode = RepeatMode.Reverse
+                repeatMode = RepeatMode.Reverse
         ),
         label = "fourth_dot_alpha"
     )

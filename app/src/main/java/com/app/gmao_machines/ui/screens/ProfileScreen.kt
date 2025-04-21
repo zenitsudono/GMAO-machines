@@ -3,7 +3,6 @@ package com.app.gmao_machines.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,22 +10,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
 import com.app.gmao_machines.ui.viewModel.ProfileViewModel
 import com.app.gmao_machines.ui.viewModel.ThemeViewModel
 import com.app.gmao_machines.ui.viewModel.ThemeViewModelProvider
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onSignOut: () -> Unit = {},
@@ -36,6 +30,24 @@ fun ProfileScreen(
     var showSignOutDialog by remember { mutableStateOf(false) }
     val isDarkTheme by themeViewModel.isDarkTheme
     val context = LocalContext.current
+    
+    // State for navigation to sub-screens
+    var showPrivacyScreen by remember { mutableStateOf(false) }
+    var showHelpScreen by remember { mutableStateOf(false) }
+    
+    // Collect user info
+    val userInfo by profileViewModel.userInfo.collectAsState()
+
+    // Show sub-screens if needed
+    if (showPrivacyScreen) {
+        PrivacySecurityScreen(onBackClick = { showPrivacyScreen = false })
+        return
+    }
+    
+    if (showHelpScreen) {
+        HelpSupportScreen(onBackClick = { showHelpScreen = false })
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -58,12 +70,13 @@ fun ProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Profile Image removed as requested
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // User Name
             Text(
-                text = "John Doe",
+                text = userInfo.displayName,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -72,7 +85,7 @@ fun ProfileScreen(
 
             // User Email
             Text(
-                text = "john.doe@example.com",
+                text = userInfo.email,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -85,15 +98,15 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 StatItem(
-                    count = "28",
+                    count = userInfo.machineCount.toString(),
                     label = "Machines"
                 )
                 StatItem(
-                    count = "156",
+                    count = userInfo.maintenanceCount.toString(),
                     label = "Maintenance"
                 )
                 StatItem(
-                    count = "43",
+                    count = userInfo.reportCount.toString(),
                     label = "Reports"
                 )
             }
@@ -176,13 +189,13 @@ fun ProfileScreen(
             SettingsItem(
                 icon = Icons.Default.Security,
                 title = "Privacy & Security",
-                onClick = { /* Handle privacy */ }
+                onClick = { showPrivacyScreen = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.Help,
                 title = "Help & Support",
-                onClick = { /* Handle help */ }
+                onClick = { showHelpScreen = true }
             )
 
             Spacer(modifier = Modifier.height(24.dp))

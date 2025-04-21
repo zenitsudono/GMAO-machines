@@ -144,4 +144,43 @@ class AuthRepository {
             throw Exception("Failed to send verification email: ${e.message}")
         }
     }
+
+    /**
+     * Gets user information by email address for biometric login
+     * This is used when authenticating with biometrics, where we need to fetch the user
+     * based on a saved email address.
+     * 
+     * @param email The email address to look up
+     * @return User object if found, null otherwise
+     */
+    suspend fun getUserByEmail(email: String): User? {
+        if (email.isBlank()) {
+            Log.e("AuthRepository", "Email is blank")
+            return null
+        }
+        
+        try {
+            // In a real app, this would query the database to get user info
+            // For now, we'll just create a basic user object with the email
+            // Typically this would be integrated with Firestore or another database
+            
+            // Check if there are any users with this email in your authentication system
+            val users = auth.fetchSignInMethodsForEmail(email).await()
+            
+            if (users.signInMethods.isNullOrEmpty()) {
+                Log.d("AuthRepository", "No user found with email $email")
+                return null
+            }
+            
+            // Create a user object with the minimum required info
+            return User(
+                email = email,
+                firstName = "",  // In a real app, fetch this from your database
+                lastName = ""    // In a real app, fetch this from your database
+            )
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Error getting user by email: ${e.message}", e)
+            return null
+        }
+    }
 }
