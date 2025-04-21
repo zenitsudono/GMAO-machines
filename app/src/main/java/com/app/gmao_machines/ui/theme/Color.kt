@@ -18,10 +18,22 @@ val Success = Color(0xFF22C55E) // Green
 val Error = Color(0xFFEF4444) // Red
 val Warning = Color(0xFFF59E0B) // Amber
 
-// Background colors
-val Background = Color(0xFFF8FAFC)
-val Surface = Color(0xFFFFFFFF)
-val SurfaceVariant = Color(0xFFF1F5F9)
+// Light theme colors
+val Background = Color(0xFFFAFAFA) // Very light gray, almost white
+val Surface = Color(0xFFFFFFFF) // Pure white
+val SurfaceVariant = Color(0xFFF8F9FA) // Slightly off-white
+
+// Dark theme colors
+val DarkBackground = Color(0xFF1A1C1E)
+val DarkSurface = Color(0xFF202124)
+val DarkSurfaceVariant = Color(0xFF2A2B2F)
+val DarkBorderColor = Color(0xFF3A3B3F)
+
+// Container colors
+val PrimaryContainer = Color(0xFFE6F0FF) // Light blue background
+val SecondaryContainer = Color(0xFFF1F5F9) // Light gray background
+val ErrorContainer = Color(0xFFFFE5E5) // Light red background
+val SuccessContainer = Color(0xFFE6FFE6) // Light green background
 
 // Text colors
 val TextPrimary = Color(0xFF1E293B)

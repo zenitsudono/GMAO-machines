@@ -66,7 +66,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     // DataStore Preferences
-    implementation("androidx.datastore:datastore-preferences:1.1.4")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")

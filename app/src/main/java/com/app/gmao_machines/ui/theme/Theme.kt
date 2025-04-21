@@ -47,21 +47,21 @@ private val DarkColorScheme = darkColorScheme(
     onSecondaryContainer = SecondaryLight,
     tertiary = Accent,
     onTertiary = Surface,
-    background = TextPrimary,
-    onBackground = Background,
-    surface = SecondaryDark,
+    background = DarkBackground,
+    onBackground = Surface,
+    surface = DarkSurface,
     onSurface = Surface,
-    surfaceVariant = Secondary,
+    surfaceVariant = DarkSurfaceVariant,
     onSurfaceVariant = SecondaryLight,
-    outline = BorderColor,
+    outline = DarkBorderColor,
     error = Error
 )
 
 @Composable
 fun GMAOMachinesTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean,
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -72,11 +72,12 @@ fun GMAOMachinesTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor = if (darkTheme) DarkBackground.toArgb() else Background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

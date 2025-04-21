@@ -9,14 +9,16 @@ import androidx.compose.runtime.*
 import com.app.gmao_machines.navigation.AppNavigation
 import com.app.gmao_machines.ui.theme.*
 import com.app.gmao_machines.ui.screens.EnhancedSplashScreen
+import com.app.gmao_machines.ui.viewModel.ThemeViewModelProvider
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
         setContent {
-            GMAOMachinesTheme {
+            val themeViewModel = ThemeViewModelProvider.getThemeViewModel(applicationContext)
+            val isDarkTheme by themeViewModel.isDarkTheme
+
+            GMAOMachinesTheme(darkTheme = isDarkTheme) {
                 var showSplash by remember { mutableStateOf(true) }
                 
                 AnimatedVisibility(

@@ -13,19 +13,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import com.app.gmao_machines.ui.viewModel.ProfileViewModel
+import com.app.gmao_machines.ui.viewModel.ThemeViewModel
+import com.app.gmao_machines.ui.viewModel.ThemeViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun ProfileScreen(
-    onSignOut: () -> Unit = {}
+    onSignOut: () -> Unit = {},
+    profileViewModel: ProfileViewModel = viewModel(),
+    themeViewModel: ThemeViewModel = ThemeViewModelProvider.getThemeViewModel(LocalContext.current)
 ) {
     var showSignOutDialog by remember { mutableStateOf(false) }
+    val isDarkTheme by themeViewModel.isDarkTheme
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -48,46 +58,6 @@ fun ProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile Image
-            GlideImage(
-                model = "https://ui-avatars.com/api/?name=John+Doe&background=random",
-                contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentScale = ContentScale.Crop,
-                loading = placeholder {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                failure = placeholder {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .align(Alignment.Center),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -159,6 +129,50 @@ fun ProfileScreen(
                 onClick = { /* Handle notifications */ }
             )
 
+            // Theme Switcher
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color = Color.Transparent
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = if (isDarkTheme) Icons.Default.DarkMode else Icons.Default.LightMode,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Dark Theme",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            text = if (isDarkTheme) "On" else "Off",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = isDarkTheme,
+                        onCheckedChange = { themeViewModel.setTheme(it) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    )
+                }
+            }
+
             SettingsItem(
                 icon = Icons.Default.Security,
                 title = "Privacy & Security",
@@ -219,7 +233,9 @@ fun ProfileScreen(
                 TextButton(
                     onClick = {
                         showSignOutDialog = false
-                        onSignOut()
+                        profileViewModel.signOut(context) {
+                            onSignOut()
+                        }
                     },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.error
@@ -265,8 +281,9 @@ private fun StatItem(
 
 @Composable
 private fun SettingsItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     title: String,
+    subtitle: String? = null,
     onClick: () -> Unit
 ) {
     Surface(
@@ -288,12 +305,20 @@ private fun SettingsItem(
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.weight(1f))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
