@@ -64,7 +64,7 @@ fun RegisterContent(
     val passwordsMatch = password.value == confirmPassword.value && password.value.isNotEmpty()
 
     Box {
-        Column(
+    Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
@@ -101,7 +101,7 @@ fun RegisterContent(
                 textAlign = TextAlign.Center
             )
 
-            Text(
+                Text(
                 text = when(currentStep) {
                     1 -> "Tell us about yourself"
                     2 -> "Secure your account"
@@ -128,12 +128,12 @@ fun RegisterContent(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            OutlinedTextField(
-                                value = firstName.value,
-                                onValueChange = { viewModel.updateFirstName(it) },
+                OutlinedTextField(
+                    value = firstName.value,
+                    onValueChange = { viewModel.updateFirstName(it) },
                                 label = { Text("First Name") },
                                 placeholder = { Text("Enter first name") },
-                                modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -146,18 +146,18 @@ fun RegisterContent(
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                 },
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                                singleLine = true
-                            )
-                        }
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    singleLine = true
+                )
+            }
 
-                        Column(modifier = Modifier.weight(1f)) {
-                            OutlinedTextField(
-                                value = lastName.value,
-                                onValueChange = { viewModel.updateLastName(it) },
+            Column(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = lastName.value,
+                    onValueChange = { viewModel.updateLastName(it) },
                                 label = { Text("Last Name") },
                                 placeholder = { Text("Enter last name") },
-                                modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -170,21 +170,21 @@ fun RegisterContent(
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                 },
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                                singleLine = true
-                            )
-                        }
-                    }
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    singleLine = true
+                )
+            }
+        }
 
-                    // Email field
-                    OutlinedTextField(
-                        value = email.value,
-                        onValueChange = { viewModel.updateEmail(it) },
+        // Email field
+        OutlinedTextField(
+            value = email.value,
+            onValueChange = { viewModel.updateEmail(it) },
                         label = { Text("Email address") },
                         placeholder = { Text("Enter your email") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -206,10 +206,10 @@ fun RegisterContent(
                                 )
                             }
                         },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next
-                        ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
                         singleLine = true,
                         isError = email.value.isNotEmpty() && !isEmailValid
                     )
@@ -219,8 +219,8 @@ fun RegisterContent(
                     // Next step button
                     Button(
                         onClick = { currentStep = 2 },
-                        modifier = Modifier
-                            .fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -251,24 +251,24 @@ fun RegisterContent(
             ) {
                 Column(Modifier.fillMaxWidth()) {
                     // Password field
-                    OutlinedTextField(
-                        value = password.value,
-                        onValueChange = { viewModel.updatePassword(it) },
+        OutlinedTextField(
+            value = password.value,
+            onValueChange = { viewModel.updatePassword(it) },
                         label = { Text("Create Password") },
                         placeholder = { Text("Enter password") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                         ),
-                        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Next
-                        ),
+            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            ),
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
@@ -276,17 +276,17 @@ fun RegisterContent(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        trailingIcon = {
-                            IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+            trailingIcon = {
+                IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
                                 Icon(
                                     imageVector = if (passwordVisible.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                     contentDescription = "Toggle password visibility",
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                            }
-                        },
-                        singleLine = true
-                    )
+                }
+            },
+            singleLine = true
+        )
 
                     // Password strength indicator
                     if (password.value.isNotEmpty()) {
@@ -345,24 +345,24 @@ fun RegisterContent(
                         }
                     }
 
-                    // Password requirements hint
-                    Text(
-                        text = "Min. 8 characters, uppercase, lowercase, number and special character",
+        // Password requirements hint
+        Text(
+            text = "Min. 8 characters, uppercase, lowercase, number and special character",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
 
-                    // Confirm Password field
-                    OutlinedTextField(
-                        value = confirmPassword.value,
-                        onValueChange = { viewModel.updateConfirmPassword(it) },
+        // Confirm Password field
+        OutlinedTextField(
+            value = confirmPassword.value,
+            onValueChange = { viewModel.updateConfirmPassword(it) },
                         label = { Text("Confirm Password") },
                         placeholder = { Text("Confirm your password") },
-                        modifier = Modifier
-                            .fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                             .padding(bottom = 8.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -370,11 +370,11 @@ fun RegisterContent(
                             unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                             errorBorderColor = MaterialTheme.colorScheme.error
                         ),
-                        visualTransformation = if (confirmPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
+            visualTransformation = if (confirmPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
@@ -382,7 +382,7 @@ fun RegisterContent(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        trailingIcon = {
+            trailingIcon = {
                             Row {
                                 if (confirmPassword.value.isNotEmpty() && password.value.isNotEmpty()) {
                                     Icon(
@@ -392,7 +392,7 @@ fun RegisterContent(
                                         modifier = Modifier.padding(end = 8.dp)
                                     )
                                 }
-                                IconButton(onClick = { viewModel.toggleConfirmPasswordVisibility() }) {
+                IconButton(onClick = { viewModel.toggleConfirmPasswordVisibility() }) {
                                     Icon(
                                         imageVector = if (confirmPasswordVisible.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                         contentDescription = "Toggle password visibility",
@@ -530,10 +530,10 @@ fun RegisterContent(
                     }
 
                     // Terms and conditions checkbox with animation
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
                             .padding(vertical = 16.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(
@@ -543,9 +543,9 @@ fun RegisterContent(
                                     Color.Transparent
                             )
                             .padding(8.dp)
-                    ) {
-                        Checkbox(
-                            checked = termsAccepted.value,
+        ) {
+            Checkbox(
+                checked = termsAccepted.value,
                             onCheckedChange = { viewModel.updateTermsAccepted(it) },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = MaterialTheme.colorScheme.primary,
@@ -555,8 +555,8 @@ fun RegisterContent(
                         Column(
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
-                            Text(
-                                text = "I agree to the Terms of Service and Privacy Policy",
+            Text(
+                text = "I agree to the Terms of Service and Privacy Policy",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
@@ -595,9 +595,9 @@ fun RegisterContent(
                             Text("Back")
                         }
 
-                        Button(
-                            onClick = { viewModel.register() },
-                            modifier = Modifier
+        Button(
+            onClick = { viewModel.register() },
+            modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),
                             shape = RoundedCornerShape(16.dp),
@@ -619,10 +619,10 @@ fun RegisterContent(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Already have an account? Sign in link
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+        // Already have an account? Sign in link
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
                     .padding(top = 24.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -633,13 +633,13 @@ fun RegisterContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
-                Text(
+            Text(
                     text = " Sign in",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
                         .clickable(onClick = onSignInClick)
                         .padding(start = 4.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                 )

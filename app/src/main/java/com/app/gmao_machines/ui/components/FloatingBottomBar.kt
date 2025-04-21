@@ -1,5 +1,6 @@
 package com.app.gmao_machines.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.unit.dp
 import com.app.gmao_machines.models.Screen
 
@@ -35,6 +37,9 @@ fun FloatingBottomBar(
         color = MaterialTheme.colorScheme.surface
     ) {
         NavigationBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Transparent),
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = 0.dp
