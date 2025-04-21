@@ -1,6 +1,5 @@
 package com.app.gmao_machines.ui.screens
 
-import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.models.Screen
 import com.app.gmao_machines.ui.components.FloatingBottomBar
-import com.app.gmao_machines.ui.theme.*
 import com.app.gmao_machines.ui.viewModel.MainViewModel
 
 @Composable
@@ -44,13 +42,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             when (currentScreen) {
                 Screen.Home -> Text("Home Screen")
                 Screen.History -> Text("History Screen")
-                Screen.Profile -> Text("Profile Screen")
+                Screen.Profile -> ProfileScreen()
             }
         }
     }
