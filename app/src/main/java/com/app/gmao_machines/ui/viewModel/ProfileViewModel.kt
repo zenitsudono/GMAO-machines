@@ -20,13 +20,18 @@ class ProfileViewModel : ViewModel() {
                 auth.signOut()
 
                 // Sign out from Google
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(R.string.default_web_client_id.toString()) // This should match your Firebase config
-                    .requestEmail()
-                    .build()
+                try {
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(context.getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build()
 
-                val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                googleSignInClient.signOut().await()
+                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                    googleSignInClient.signOut().await()
+                } catch (e: Exception) {
+                    // Handle Google sign out error but continue
+                    e.printStackTrace()
+                }
 
                 onSignOutComplete()
             } catch (e: Exception) {

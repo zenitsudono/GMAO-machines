@@ -19,7 +19,10 @@ import com.app.gmao_machines.ui.components.FloatingBottomBar
 import com.app.gmao_machines.ui.viewModel.MainViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = viewModel()) {
+fun MainScreen(
+    viewModel: MainViewModel = viewModel(),
+    onSignOut: () -> Unit = {}
+) {
     val currentScreen = viewModel.currentScreen.collectAsState().value
     val navigationItems = listOf(Screen.Home, Screen.History, Screen.Profile)
 
@@ -49,7 +52,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             when (currentScreen) {
                 Screen.Home -> Text("Home Screen")
                 Screen.History -> Text("History Screen")
-                Screen.Profile -> ProfileScreen()
+                Screen.Profile -> ProfileScreen(onSignOut = onSignOut)
             }
         }
     }

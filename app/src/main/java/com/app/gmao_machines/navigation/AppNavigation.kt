@@ -4,12 +4,13 @@ import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.app.gmao_machines.ui.screens.*
 import com.app.gmao_machines.ui.viewModel.OnboardingViewModel
 import com.google.firebase.auth.FirebaseAuth
+
+
+
 
 @Composable
 fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
@@ -58,15 +59,22 @@ fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
 
         composable("main") {
             Log.d("AppNavigation", "Displaying main screen")
-            MyApp()
+            MyApp(
+                onSignOut = {
+                    Log.d("AppNavigation", "User signed out, navigating to auth")
+                    navController.navigate("auth") {
+                        popUpTo("main") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
 
 @Composable
-fun MyApp() {
+fun MyApp(onSignOut: () -> Unit = {}) {
     MaterialTheme {
-        MainScreen()
+        MainScreen(onSignOut = onSignOut)
     }
 }
 
