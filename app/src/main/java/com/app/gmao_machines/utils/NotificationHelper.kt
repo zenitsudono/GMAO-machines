@@ -32,7 +32,7 @@ class NotificationHelper(private val context: Context) {
     companion object {
         const val CHANNEL_ID = "GMAO_CHANNEL"
         const val CHANNEL_NAME = "GMAO Notifications"
-        private val VIBRATION_PATTERN = longArrayOf(0, 500, 200, 500) // Pattern: wait, vibrate, sleep, vibrate
+        private val VIBRATION_PATTERN = longArrayOf(0, 500, 200, 500)
         private val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
         private val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
     }
