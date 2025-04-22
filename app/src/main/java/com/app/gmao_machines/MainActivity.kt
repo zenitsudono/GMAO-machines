@@ -7,9 +7,9 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import com.app.gmao_machines.navigation.AppNavigation
+import com.app.gmao_machines.provider.ThemeViewModelProvider
 import com.app.gmao_machines.ui.theme.*
 import com.app.gmao_machines.ui.screens.EnhancedSplashScreen
-import com.app.gmao_machines.ui.viewModel.ThemeViewModelProvider
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

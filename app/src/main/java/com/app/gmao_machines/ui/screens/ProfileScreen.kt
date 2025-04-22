@@ -16,9 +16,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.gmao_machines.provider.ThemeViewModelProvider
 import com.app.gmao_machines.ui.viewModel.ProfileViewModel
 import com.app.gmao_machines.ui.viewModel.ThemeViewModel
-import com.app.gmao_machines.ui.viewModel.ThemeViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +34,7 @@ fun ProfileScreen(
     // State for navigation to sub-screens
     var showPrivacyScreen by remember { mutableStateOf(false) }
     var showHelpScreen by remember { mutableStateOf(false) }
+    var showNotificationsScreen by remember { mutableStateOf(false) }
     
     // Collect user info
     val userInfo by profileViewModel.userInfo.collectAsState()
@@ -46,6 +47,11 @@ fun ProfileScreen(
     
     if (showHelpScreen) {
         HelpSupportScreen(onBackClick = { showHelpScreen = false })
+        return
+    }
+
+    if (showNotificationsScreen) {
+        NotificationScreen(onBackClick = { showNotificationsScreen = false })
         return
     }
 
@@ -139,7 +145,7 @@ fun ProfileScreen(
             SettingsItem(
                 icon = Icons.Default.Notifications,
                 title = "Notifications",
-                onClick = { /* Handle notifications */ }
+                onClick = { showNotificationsScreen = true }
             )
 
             // Theme Switcher
