@@ -7,7 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.app.gmao_machines.R
+import com.app.gmao_machines.models.CountryCode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,13 +20,27 @@ import kotlinx.coroutines.tasks.await
 data class UserInfo(
     val displayName: String = "User",
     val email: String = "",
+    val phoneNumber: String = "",
+    val countryCode: CountryCode = CountryCode.DEFAULT,
+    val jobTitle: String = "",
+    val department: String = "",
+    val cin: String = "",
     val machineCount: Int = 0,
     val maintenanceCount: Int = 0,
     val reportCount: Int = 0
-)
+) {
+    // Format the phone number with country code for display
+    val formattedPhoneNumber: String
+        get() = if (phoneNumber.isNotBlank()) {
+            "+${countryCode.dialCode} $phoneNumber"
+        } else {
+            ""
+        }
+}
 
 class ProfileViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
     private lateinit var sharedPreferences: android.content.SharedPreferences
 
     // StateFlow for user information
@@ -50,10 +67,50 @@ class ProfileViewModel : ViewModel() {
                     currentUser.email?.split("@")[0]
                 } else "User"
                 
-            _userInfo.value = _userInfo.value.copy(
-                displayName = displayName.toString(),
-                email = currentUser.email ?: ""
-            )
+            viewModelScope.launch {
+                try {
+                    // Try to load additional user info from Firestore
+                    val userId = currentUser.uid
+                    val userDoc = firestore.collection("users").document(userId).get().await()
+                    
+                    if (userDoc.exists()) {
+                        // Get phone and extract country code if available
+                        val rawPhone = userDoc.getString("phoneNumber") ?: ""
+                        val countryDialCode = userDoc.getString("countryDialCode") ?: CountryCode.DEFAULT.dialCode
+                        val countryCode = CountryCode.findByDialCode(countryDialCode)
+                        
+                        // For migration: If we have a full phone with +, extract country code
+                        val (extractedCountryCode, localNumber) = if (rawPhone.startsWith("+")) {
+                            CountryCode.extractCountryCodeFromPhone(rawPhone)
+                        } else {
+                            Pair(countryCode, rawPhone)
+                        }
+                        
+                        _userInfo.value = _userInfo.value.copy(
+                            displayName = displayName.toString(),
+                            email = currentUser.email ?: "",
+                            phoneNumber = localNumber,
+                            countryCode = extractedCountryCode,
+                            jobTitle = userDoc.getString("jobTitle") ?: "",
+                            department = userDoc.getString("department") ?: "",
+                            cin = userDoc.getString("cin") ?: ""
+                        )
+                    } else {
+                        // If no additional data exists, just update basic info
+                        _userInfo.value = _userInfo.value.copy(
+                            displayName = displayName.toString(),
+                            email = currentUser.email ?: ""
+                        )
+                    }
+                } catch (e: Exception) {
+                    // If Firestore fetch fails, still update the basic info
+                    Log.e("ProfileViewModel", "Error loading user data from Firestore", e)
+                    _userInfo.value = _userInfo.value.copy(
+                        displayName = displayName.toString(),
+                        email = currentUser.email ?: ""
+                    )
+                }
+            }
         }
     }
     
@@ -80,6 +137,58 @@ class ProfileViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("ProfileViewModel", "Error loading user stats", e)
             }
+        }
+    }
+
+    suspend fun updateProfile(
+        displayName: String,
+        phoneNumber: String,
+        countryCode: CountryCode = _userInfo.value.countryCode,
+        jobTitle: String,
+        department: String,
+        cin: String
+    ): Boolean {
+        try {
+            val user = auth.currentUser ?: return false
+            
+            // Update display name in Firebase Auth
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName)
+                .build()
+                
+            user.updateProfile(profileUpdates).await()
+            
+            // Store additional fields in Firestore
+            val userData = hashMapOf(
+                "displayName" to displayName,
+                "email" to (user.email ?: ""),
+                "phoneNumber" to phoneNumber,
+                "countryDialCode" to countryCode.dialCode, // Store country dial code separately
+                "jobTitle" to jobTitle,
+                "department" to department,
+                "cin" to cin,
+                "updatedAt" to com.google.firebase.Timestamp.now()
+            )
+            
+            firestore.collection("users")
+                .document(user.uid)
+                .set(userData)
+                .await()
+                
+            // Update local state
+            _userInfo.value = _userInfo.value.copy(
+                displayName = displayName,
+                phoneNumber = phoneNumber,
+                countryCode = countryCode,
+                jobTitle = jobTitle,
+                department = department,
+                cin = cin
+            )
+            
+            return true
+        } catch (e: Exception) {
+            Log.e("ProfileViewModel", "Error updating profile", e)
+            return false
         }
     }
 

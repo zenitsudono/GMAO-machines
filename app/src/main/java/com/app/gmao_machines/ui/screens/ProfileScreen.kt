@@ -35,6 +35,7 @@ fun ProfileScreen(
     var showPrivacyScreen by remember { mutableStateOf(false) }
     var showHelpScreen by remember { mutableStateOf(false) }
     var showNotificationsScreen by remember { mutableStateOf(false) }
+    var showEditProfileScreen by remember { mutableStateOf(false) }
     
     // Collect user info
     val userInfo by profileViewModel.userInfo.collectAsState()
@@ -52,6 +53,11 @@ fun ProfileScreen(
 
     if (showNotificationsScreen) {
         NotificationScreen(onBackClick = { showNotificationsScreen = false })
+        return
+    }
+    
+    if (showEditProfileScreen) {
+        EditProfileScreen(onBackClick = { showEditProfileScreen = false })
         return
     }
 
@@ -76,10 +82,6 @@ fun ProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile Image removed as requested
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // User Name
             Text(
                 text = userInfo.displayName,
@@ -95,6 +97,73 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            
+            // Display job title and department if available
+            if (userInfo.jobTitle.isNotBlank() || userInfo.department.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                val jobInfo = buildString {
+                    if (userInfo.jobTitle.isNotBlank()) {
+                        append(userInfo.jobTitle)
+                        if (userInfo.department.isNotBlank()) {
+                            append(" • ")
+                        }
+                    }
+                    if (userInfo.department.isNotBlank()) {
+                        append(userInfo.department)
+                    }
+                }
+                
+                Text(
+                    text = jobInfo,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            // Display phone number if available
+            if (userInfo.phoneNumber.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = userInfo.formattedPhoneNumber,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            
+            // Display CIN if available
+            if (userInfo.cin.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Badge,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "CIN: ${userInfo.cin}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -139,7 +208,7 @@ fun ProfileScreen(
             SettingsItem(
                 icon = Icons.Default.Person,
                 title = "Edit Profile",
-                onClick = { /* Handle edit profile */ }
+                onClick = { showEditProfileScreen = true }
             )
 
             SettingsItem(
