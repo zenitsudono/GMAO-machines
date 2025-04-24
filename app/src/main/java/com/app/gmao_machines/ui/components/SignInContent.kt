@@ -43,7 +43,7 @@ fun SignInContent(
     val email = viewModel.email.collectAsState()
     val password = viewModel.password.collectAsState()
     val passwordVisible = viewModel.passwordVisible.collectAsState()
-    
+
     // State for forgot password dialog
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
@@ -72,7 +72,7 @@ fun SignInContent(
     }
 
     Box {
-        Column(
+    Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
@@ -120,14 +120,14 @@ fun SignInContent(
             )
 
             // Email field with validation
-            OutlinedTextField(
-                value = email.value,
-                onValueChange = { viewModel.updateEmail(it) },
+        OutlinedTextField(
+            value = email.value,
+            onValueChange = { viewModel.updateEmail(it) },
                 label = { Text("Email address") },
                 placeholder = { Text("Enter your email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -149,33 +149,33 @@ fun SignInContent(
                         )
                     }
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
                 singleLine = true,
                 isError = email.value.isNotEmpty() && !isEmailValid
             )
 
             // Password field with enhanced UI
-            OutlinedTextField(
-                value = password.value,
-                onValueChange = { viewModel.updatePassword(it) },
+        OutlinedTextField(
+            value = password.value,
+            onValueChange = { viewModel.updatePassword(it) },
                 label = { Text("Password") },
                 placeholder = { Text("Enter your password") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 ),
-                visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
+            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
@@ -183,39 +183,39 @@ fun SignInContent(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
-                trailingIcon = {
-                    IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+            trailingIcon = {
+                IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
                         Icon(
                             imageVector = if (passwordVisible.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                             contentDescription = "Toggle password visibility",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-                },
-                singleLine = true
-            )
+                }
+            },
+            singleLine = true
+        )
 
             // Forgot password link with enhanced styling
-            Text(
-                text = "Forgot password?",
-                color = MaterialTheme.colorScheme.primary,
+        Text(
+            text = "Forgot password?",
+            color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Medium
                 ),
-                modifier = Modifier
-                    .align(Alignment.End)
+            modifier = Modifier
+                .align(Alignment.End)
                     .clip(RoundedCornerShape(4.dp))
                     .clickable { showForgotPasswordDialog = true }
                     .padding(vertical = 4.dp, horizontal = 8.dp)
-            )
+        )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Sign In button with animation
-            Button(
-                onClick = { viewModel.signIn() },
-                modifier = Modifier
-                    .fillMaxWidth()
+        Button(
+            onClick = { viewModel.signIn() },
+            modifier = Modifier
+                .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -244,9 +244,9 @@ fun SignInContent(
             }
 
             // Other sign-in options with improved styling
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
                     .padding(vertical = 32.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -293,12 +293,12 @@ fun SignInContent(
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
+            ) {
+                Icon(
                         painter = painterResource(id = R.drawable.google),
-                        contentDescription = "Sign in with Google",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(24.dp)
+                    contentDescription = "Sign in with Google",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(

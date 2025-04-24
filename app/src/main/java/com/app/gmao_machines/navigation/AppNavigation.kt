@@ -9,9 +9,6 @@ import com.app.gmao_machines.ui.screens.*
 import com.app.gmao_machines.ui.viewModel.OnboardingViewModel
 import com.google.firebase.auth.FirebaseAuth
 
-
-
-
 @Composable
 fun AppNavigation(viewModel: OnboardingViewModel = viewModel()) {
     val navController = rememberNavController()

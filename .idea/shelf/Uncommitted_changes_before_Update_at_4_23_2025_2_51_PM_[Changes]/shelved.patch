@@ -1,0 +1,304 @@
+Index: app/src/main/java/com/app/gmao_machines/ui/components/SignInContent.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.app.gmao_machines.ui.components\r\n\r\nimport androidx.compose.animation.AnimatedVisibility\r\nimport androidx.compose.animation.core.*\r\nimport androidx.compose.foundation.BorderStroke\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.shape.CircleShape\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.foundation.text.KeyboardOptions\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.*\r\nimport androidx.compose.material.icons.outlined.CheckCircle\r\nimport androidx.compose.material.icons.outlined.Info\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.input.*\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.unit.dp\r\nimport com.app.gmao_machines.R\r\nimport com.app.gmao_machines.ui.viewModel.AuthViewModel\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun SignInContent(\r\n    viewModel: AuthViewModel,\r\n    onGoogleSignIn: () -> Unit,\r\n    onRegisterClick: () -> Unit = {},\r\n    onForgotPassword: (String) -> Unit = {\r\n        val email = \"\"\r\n        viewModel.forgotPassword(email)\r\n    }\r\n) {\r\n    val context = LocalContext.current\r\n    val email = viewModel.email.collectAsState()\r\n    val password = viewModel.password.collectAsState()\r\n    val passwordVisible = viewModel.passwordVisible.collectAsState()\r\n    \r\n    // State for forgot password dialog\r\n    var showForgotPasswordDialog by remember { mutableStateOf(false) }\r\n\r\n    // Create animated states\r\n    val animationProgress = remember { Animatable(0f) }\r\n    LaunchedEffect(Unit) {\r\n        animationProgress.animateTo(\r\n            targetValue = 1f,\r\n            animationSpec = tween(durationMillis = 1000, easing = EaseOutQuart)\r\n        )\r\n    }\r\n\r\n    // Email validation state\r\n    val isEmailValid = email.value.contains(\"@\") && email.value.contains(\".\")\r\n    \r\n    // Show forgot password dialog if needed\r\n    if (showForgotPasswordDialog) {\r\n        ForgotPasswordDialog(\r\n            initialEmail = email.value,\r\n            onDismiss = { showForgotPasswordDialog = false },\r\n            onSubmit = { emailToReset ->\r\n                onForgotPassword(emailToReset)\r\n                showForgotPasswordDialog = false\r\n            }\r\n        )\r\n    }\r\n\r\n    Box {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .padding(horizontal = 24.dp),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            Spacer(modifier = Modifier.height(48.dp))\r\n\r\n            // Logo placeholder (can be replaced with actual logo)\r\n            Box(\r\n                modifier = Modifier\r\n                    .size(80.dp)\r\n                    .clip(CircleShape)\r\n                    .background(MaterialTheme.colorScheme.primaryContainer),\r\n                contentAlignment = Alignment.Center\r\n            ) {\r\n                Icon(\r\n                    imageVector = Icons.Default.Lock,\r\n                    contentDescription = \"App Logo\",\r\n                    tint = MaterialTheme.colorScheme.primary,\r\n                    modifier = Modifier.size(40.dp)\r\n                )\r\n            }\r\n\r\n            Spacer(modifier = Modifier.height(24.dp))\r\n\r\n            // Welcome Text with animation\r\n            Text(\r\n                text = \"Welcome Back\",\r\n                style = MaterialTheme.typography.headlineMedium.copy(\r\n                    fontWeight = FontWeight.Bold\r\n                ),\r\n                color = MaterialTheme.colorScheme.primary,\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(top = 8.dp),\r\n                textAlign = TextAlign.Center\r\n            )\r\n\r\n            Text(\r\n                text = \"Sign in to continue\",\r\n                style = MaterialTheme.typography.bodyLarge,\r\n                color = MaterialTheme.colorScheme.onSurfaceVariant,\r\n                modifier = Modifier.padding(top = 8.dp, bottom = 32.dp),\r\n                textAlign = TextAlign.Center\r\n            )\r\n\r\n            // Email field with validation\r\n            OutlinedTextField(\r\n                value = email.value,\r\n                onValueChange = { viewModel.updateEmail(it) },\r\n                label = { Text(\"Email address\") },\r\n                placeholder = { Text(\"Enter your email\") },\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(bottom = 16.dp),\r\n                shape = RoundedCornerShape(16.dp),\r\n                colors = OutlinedTextFieldDefaults.colors(\r\n                    focusedBorderColor = MaterialTheme.colorScheme.primary,\r\n                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,\r\n                ),\r\n                leadingIcon = {\r\n                    Icon(\r\n                        imageVector = Icons.Default.Email,\r\n                        contentDescription = \"Email\",\r\n                        tint = MaterialTheme.colorScheme.primary\r\n                    )\r\n                },\r\n                trailingIcon = {\r\n                    if (email.value.isNotEmpty()) {\r\n                        Icon(\r\n                            imageVector = if (isEmailValid) Icons.Outlined.CheckCircle else Icons.Outlined.Info,\r\n                            contentDescription = \"Email validation\",\r\n                            tint = if (isEmailValid) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error\r\n                        )\r\n                    }\r\n                },\r\n                keyboardOptions = KeyboardOptions(\r\n                    keyboardType = KeyboardType.Email,\r\n                    imeAction = ImeAction.Next\r\n                ),\r\n                singleLine = true,\r\n                isError = email.value.isNotEmpty() && !isEmailValid\r\n            )\r\n\r\n            // Password field with enhanced UI\r\n            OutlinedTextField(\r\n                value = password.value,\r\n                onValueChange = { viewModel.updatePassword(it) },\r\n                label = { Text(\"Password\") },\r\n                placeholder = { Text(\"Enter your password\") },\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(bottom = 8.dp),\r\n                shape = RoundedCornerShape(16.dp),\r\n                colors = OutlinedTextFieldDefaults.colors(\r\n                    focusedBorderColor = MaterialTheme.colorScheme.primary,\r\n                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,\r\n                ),\r\n                visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),\r\n                keyboardOptions = KeyboardOptions(\r\n                    keyboardType = KeyboardType.Password,\r\n                    imeAction = ImeAction.Done\r\n                ),\r\n                leadingIcon = {\r\n                    Icon(\r\n                        imageVector = Icons.Default.Lock,\r\n                        contentDescription = \"Password\",\r\n                        tint = MaterialTheme.colorScheme.primary\r\n                    )\r\n                },\r\n                trailingIcon = {\r\n                    IconButton(onClick = { viewModel.togglePasswordVisibility() }) {\r\n                        Icon(\r\n                            imageVector = if (passwordVisible.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,\r\n                            contentDescription = \"Toggle password visibility\",\r\n                            tint = MaterialTheme.colorScheme.onSurfaceVariant\r\n                        )\r\n                    }\r\n                },\r\n                singleLine = true\r\n            )\r\n\r\n            // Forgot password link with enhanced styling\r\n            Text(\r\n                text = \"Forgot password?\",\r\n                color = MaterialTheme.colorScheme.primary,\r\n                style = MaterialTheme.typography.bodyMedium.copy(\r\n                    fontWeight = FontWeight.Medium\r\n                ),\r\n                modifier = Modifier\r\n                    .align(Alignment.End)\r\n                    .clip(RoundedCornerShape(4.dp))\r\n                    .clickable { showForgotPasswordDialog = true }\r\n                    .padding(vertical = 4.dp, horizontal = 8.dp)\r\n            )\r\n\r\n            Spacer(modifier = Modifier.height(24.dp))\r\n\r\n            // Sign In button with animation\r\n            Button(\r\n                onClick = { viewModel.signIn() },\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .height(56.dp),\r\n                shape = RoundedCornerShape(16.dp),\r\n                colors = ButtonDefaults.buttonColors(\r\n                    containerColor = MaterialTheme.colorScheme.primary\r\n                ),\r\n                enabled = email.value.isNotEmpty() && password.value.isNotEmpty()\r\n            ) {\r\n                AnimatedVisibility(visible = true) {\r\n                    Row(\r\n                        verticalAlignment = Alignment.CenterVertically,\r\n                        horizontalArrangement = Arrangement.Center\r\n                    ) {\r\n                        Text(\r\n                            \"Sign In\",\r\n                            style = MaterialTheme.typography.titleMedium.copy(\r\n                                fontWeight = FontWeight.Bold\r\n                            )\r\n                        )\r\n                        Icon(\r\n                            imageVector = Icons.Default.ArrowForward,\r\n                            contentDescription = \"Sign In\",\r\n                            modifier = Modifier.padding(start = 8.dp)\r\n                        )\r\n                    }\r\n                }\r\n            }\r\n\r\n            // Other sign-in options with improved styling\r\n            Row(\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(vertical = 32.dp),\r\n                horizontalArrangement = Arrangement.Center,\r\n                verticalAlignment = Alignment.CenterVertically\r\n            ) {\r\n                Divider(\r\n                    modifier = Modifier.weight(1f),\r\n                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)\r\n                )\r\n                Text(\r\n                    text = \"Or continue with\",\r\n                    style = MaterialTheme.typography.bodyMedium,\r\n                    color = MaterialTheme.colorScheme.onSurfaceVariant,\r\n                    modifier = Modifier.padding(horizontal = 16.dp)\r\n                )\r\n                Divider(\r\n                    modifier = Modifier.weight(1f),\r\n                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)\r\n                )\r\n            }\r\n\r\n            // Social login options with matching style\r\n            Card(\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .height(56.dp)\r\n                    .clip(RoundedCornerShape(16.dp))\r\n                    .clickable { onGoogleSignIn() },\r\n                shape = RoundedCornerShape(16.dp),\r\n                colors = CardDefaults.cardColors(\r\n                    containerColor = MaterialTheme.colorScheme.surface\r\n                ),\r\n                elevation = CardDefaults.cardElevation(\r\n                    defaultElevation = 2.dp,\r\n                    pressedElevation = 6.dp\r\n                ),\r\n                border = BorderStroke(\r\n                    width = 1.dp,\r\n                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)\r\n                )\r\n            ) {\r\n                Row(\r\n                    modifier = Modifier\r\n                        .fillMaxSize()\r\n                        .padding(horizontal = 16.dp),\r\n                    horizontalArrangement = Arrangement.Center,\r\n                    verticalAlignment = Alignment.CenterVertically\r\n                ) {\r\n                    Icon(\r\n                        painter = painterResource(id = R.drawable.google),\r\n                        contentDescription = \"Sign in with Google\",\r\n                        tint = Color.Unspecified,\r\n                        modifier = Modifier.size(24.dp)\r\n                    )\r\n                    Spacer(modifier = Modifier.width(12.dp))\r\n                    Text(\r\n                        text = \"Sign in with Google\",\r\n                        style = MaterialTheme.typography.titleSmall.copy(\r\n                            fontWeight = FontWeight.Medium\r\n                        )\r\n                    )\r\n                }\r\n            }\r\n\r\n            Spacer(modifier = Modifier.weight(1f))\r\n\r\n            // Don't have an account? Register link\r\n            Row(\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(vertical = 24.dp),\r\n                horizontalArrangement = Arrangement.Center,\r\n                verticalAlignment = Alignment.CenterVertically\r\n            ) {\r\n                Text(\r\n                    \"Don't have an account?\",\r\n                    style = MaterialTheme.typography.bodyMedium,\r\n                    color = MaterialTheme.colorScheme.onSurfaceVariant\r\n                )\r\n                \r\n                Text(\r\n                    text = \" Register\",\r\n                    style = MaterialTheme.typography.bodyMedium.copy(\r\n                        fontWeight = FontWeight.SemiBold\r\n                    ),\r\n                    color = MaterialTheme.colorScheme.primary,\r\n                    modifier = Modifier\r\n                        .clickable(onClick = onRegisterClick)\r\n                        .padding(start = 4.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)\r\n                )\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/app/gmao_machines/ui/components/SignInContent.kt b/app/src/main/java/com/app/gmao_machines/ui/components/SignInContent.kt
+--- a/app/src/main/java/com/app/gmao_machines/ui/components/SignInContent.kt	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
++++ b/app/src/main/java/com/app/gmao_machines/ui/components/SignInContent.kt	(date 1745408630654)
+@@ -43,7 +43,7 @@
+     val email = viewModel.email.collectAsState()
+     val password = viewModel.password.collectAsState()
+     val passwordVisible = viewModel.passwordVisible.collectAsState()
+-    
++
+     // State for forgot password dialog
+     var showForgotPasswordDialog by remember { mutableStateOf(false) }
+ 
+@@ -72,7 +72,7 @@
+     }
+ 
+     Box {
+-        Column(
++    Column(
+             modifier = Modifier
+                 .fillMaxWidth()
+                 .padding(horizontal = 24.dp),
+@@ -120,14 +120,14 @@
+             )
+ 
+             // Email field with validation
+-            OutlinedTextField(
+-                value = email.value,
+-                onValueChange = { viewModel.updateEmail(it) },
++        OutlinedTextField(
++            value = email.value,
++            onValueChange = { viewModel.updateEmail(it) },
+                 label = { Text("Email address") },
+                 placeholder = { Text("Enter your email") },
+-                modifier = Modifier
+-                    .fillMaxWidth()
+-                    .padding(bottom = 16.dp),
++            modifier = Modifier
++                .fillMaxWidth()
++                .padding(bottom = 16.dp),
+                 shape = RoundedCornerShape(16.dp),
+                 colors = OutlinedTextFieldDefaults.colors(
+                     focusedBorderColor = MaterialTheme.colorScheme.primary,
+@@ -149,33 +149,33 @@
+                         )
+                     }
+                 },
+-                keyboardOptions = KeyboardOptions(
+-                    keyboardType = KeyboardType.Email,
+-                    imeAction = ImeAction.Next
+-                ),
++            keyboardOptions = KeyboardOptions(
++                keyboardType = KeyboardType.Email,
++                imeAction = ImeAction.Next
++            ),
+                 singleLine = true,
+                 isError = email.value.isNotEmpty() && !isEmailValid
+             )
+ 
+             // Password field with enhanced UI
+-            OutlinedTextField(
+-                value = password.value,
+-                onValueChange = { viewModel.updatePassword(it) },
++        OutlinedTextField(
++            value = password.value,
++            onValueChange = { viewModel.updatePassword(it) },
+                 label = { Text("Password") },
+                 placeholder = { Text("Enter your password") },
+-                modifier = Modifier
+-                    .fillMaxWidth()
+-                    .padding(bottom = 8.dp),
++            modifier = Modifier
++                .fillMaxWidth()
++                .padding(bottom = 8.dp),
+                 shape = RoundedCornerShape(16.dp),
+                 colors = OutlinedTextFieldDefaults.colors(
+                     focusedBorderColor = MaterialTheme.colorScheme.primary,
+                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                 ),
+-                visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+-                keyboardOptions = KeyboardOptions(
+-                    keyboardType = KeyboardType.Password,
+-                    imeAction = ImeAction.Done
+-                ),
++            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
++            keyboardOptions = KeyboardOptions(
++                keyboardType = KeyboardType.Password,
++                imeAction = ImeAction.Done
++            ),
+                 leadingIcon = {
+                     Icon(
+                         imageVector = Icons.Default.Lock,
+@@ -183,39 +183,39 @@
+                         tint = MaterialTheme.colorScheme.primary
+                     )
+                 },
+-                trailingIcon = {
+-                    IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
++            trailingIcon = {
++                IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+                         Icon(
+                             imageVector = if (passwordVisible.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                             contentDescription = "Toggle password visibility",
+                             tint = MaterialTheme.colorScheme.onSurfaceVariant
+                         )
+-                    }
+-                },
+-                singleLine = true
+-            )
++                }
++            },
++            singleLine = true
++        )
+ 
+             // Forgot password link with enhanced styling
+-            Text(
+-                text = "Forgot password?",
+-                color = MaterialTheme.colorScheme.primary,
++        Text(
++            text = "Forgot password?",
++            color = MaterialTheme.colorScheme.primary,
+                 style = MaterialTheme.typography.bodyMedium.copy(
+                     fontWeight = FontWeight.Medium
+                 ),
+-                modifier = Modifier
+-                    .align(Alignment.End)
++            modifier = Modifier
++                .align(Alignment.End)
+                     .clip(RoundedCornerShape(4.dp))
+                     .clickable { showForgotPasswordDialog = true }
+                     .padding(vertical = 4.dp, horizontal = 8.dp)
+-            )
++        )
+ 
+             Spacer(modifier = Modifier.height(24.dp))
+ 
+             // Sign In button with animation
+-            Button(
+-                onClick = { viewModel.signIn() },
+-                modifier = Modifier
+-                    .fillMaxWidth()
++        Button(
++            onClick = { viewModel.signIn() },
++            modifier = Modifier
++                .fillMaxWidth()
+                     .height(56.dp),
+                 shape = RoundedCornerShape(16.dp),
+                 colors = ButtonDefaults.buttonColors(
+@@ -244,9 +244,9 @@
+             }
+ 
+             // Other sign-in options with improved styling
+-            Row(
+-                modifier = Modifier
+-                    .fillMaxWidth()
++        Row(
++            modifier = Modifier
++                .fillMaxWidth()
+                     .padding(vertical = 32.dp),
+                 horizontalArrangement = Arrangement.Center,
+                 verticalAlignment = Alignment.CenterVertically
+@@ -293,12 +293,12 @@
+                         .padding(horizontal = 16.dp),
+                     horizontalArrangement = Arrangement.Center,
+                     verticalAlignment = Alignment.CenterVertically
+-                ) {
+-                    Icon(
++            ) {
++                Icon(
+                         painter = painterResource(id = R.drawable.google),
+-                        contentDescription = "Sign in with Google",
+-                        tint = Color.Unspecified,
+-                        modifier = Modifier.size(24.dp)
++                    contentDescription = "Sign in with Google",
++                    tint = Color.Unspecified,
++                    modifier = Modifier.size(24.dp)
+                     )
+                     Spacer(modifier = Modifier.width(12.dp))
+                     Text(
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM_[Changes]/shelved.patch	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
++++ /dev/null	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
+@@ -1,62 +0,0 @@
+-Index: app/src/main/AndroidManifest.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.App.Starting\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\"\r\n            android:theme=\"@style/Theme.GMAOmachines\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+---- a/app/src/main/AndroidManifest.xml	(revision fc0cb3468b97f26f6ba9c96038c9c24cc6bc1e18)
+-+++ b/app/src/main/AndroidManifest.xml	(date 1744724369728)
+-@@ -20,7 +20,6 @@
+-             android:theme="@style/Theme.GMAOmachines">
+-             <intent-filter>
+-                 <action android:name="android.intent.action.MAIN" />
+--
+-                 <category android:name="android.intent.category.LAUNCHER" />
+-             </intent-filter>
+-         </activity>
+-Index: app/src/main/java/com/app/gmao_machines/MainActivity.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.app.gmao_machines\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen\r\nimport com.app.gmao_machines.navigation.AppNavigation\r\nimport com.app.gmao_machines.ui.theme.GMAOmachinesTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n\r\n        val splashScreen = installSplashScreen()\r\n\r\n        splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->\r\n            splashScreenViewProvider.remove()\r\n        }\r\n\r\n        super.onCreate(savedInstanceState)\r\n        setContent {\r\n            GMAOmachinesTheme {\r\n                AppNavigation()\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/app/gmao_machines/MainActivity.kt b/app/src/main/java/com/app/gmao_machines/MainActivity.kt
+---- a/app/src/main/java/com/app/gmao_machines/MainActivity.kt	(revision fc0cb3468b97f26f6ba9c96038c9c24cc6bc1e18)
+-+++ b/app/src/main/java/com/app/gmao_machines/MainActivity.kt	(date 1744725202446)
+-@@ -3,19 +3,11 @@
+- import android.os.Bundle
+- import androidx.activity.ComponentActivity
+- import androidx.activity.compose.setContent
+--import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+- import com.app.gmao_machines.navigation.AppNavigation
+- import com.app.gmao_machines.ui.theme.GMAOmachinesTheme
+- 
+- class MainActivity : ComponentActivity() {
+-     override fun onCreate(savedInstanceState: Bundle?) {
+--
+--        val splashScreen = installSplashScreen()
+--
+--        splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
+--            splashScreenViewProvider.remove()
+--        }
+--
+-         super.onCreate(savedInstanceState)
+-         setContent {
+-             GMAOmachinesTheme {
+-Index: app/src/main/java/com/app/gmao_machines/ui/componants/componants.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/app/gmao_machines/ui/componants/componants.kt b/app/src/main/java/com/app/gmao_machines/ui/components/componants.kt
+-rename from app/src/main/java/com/app/gmao_machines/ui/componants/componants.kt
+-rename to app/src/main/java/com/app/gmao_machines/ui/components/componants.kt
+---- a/app/src/main/java/com/app/gmao_machines/ui/componants/componants.kt	(revision fc0cb3468b97f26f6ba9c96038c9c24cc6bc1e18)
+-+++ b/app/src/main/java/com/app/gmao_machines/ui/components/componants.kt	(date 1744725382078)
+-@@ -1,2 +1,2 @@
+--package com.app.gmao_machines.ui.componants
+-+package com.app.gmao_machines.ui.components
+- 
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM__Changes_.xml	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
++++ /dev/null	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM_[Changes]" date="1744726868675" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_15_2025_3_20_PM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 4/15/2025 3:20 PM [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45__Changes_.xml	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
++++ /dev/null	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_16_04_2025_10_45_[Changes]" date="1744796760178" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 16/04/2025 10:45 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_16_04_2025_10_45_[Changes]/shelved.patch	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
++++ /dev/null	(revision 3d0a781f28b0a2817150f35e4476420bf52d4b23)
+@@ -1,19 +0,0 @@
+-Index: app/src/main/java/com/app/gmao_machines/MainActivity.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.app.gmao_machines\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport com.app.gmao_machines.models.OnboardingPref\r\nimport com.app.gmao_machines.navigation.AppNavigation\r\nimport com.app.gmao_machines.ui.screens.OnboardingScreen\r\nimport com.app.gmao_machines.ui.theme.GMAOmachinesTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n\r\n        super.onCreate(savedInstanceState)\r\n        setContent {\r\n            GMAOmachinesTheme {\r\n                if (!OnboardingPref.isOnboardingCompleted(this)) {\r\n                    OnboardingScreen {\r\n                        OnboardingPref.setOnboardingCompleted(this)\r\n                        recreate()\r\n                    }\r\n                } else {\r\n                    AppNavigation()\r\n                }\r\n\r\n            }\r\n        }\r\n\r\n\r\n    }\r\n}\r\n\r\n\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/app/gmao_machines/MainActivity.kt b/app/src/main/java/com/app/gmao_machines/MainActivity.kt
+---- a/app/src/main/java/com/app/gmao_machines/MainActivity.kt	(revision 7ad3daa091470881e0a375285907436a957b0db4)
+-+++ b/app/src/main/java/com/app/gmao_machines/MainActivity.kt	(date 1744728087036)
+-@@ -24,7 +24,7 @@
+-                 }
+- 
+-             }
+--        }
+-+        } 
+- 
+- 
+-     }
