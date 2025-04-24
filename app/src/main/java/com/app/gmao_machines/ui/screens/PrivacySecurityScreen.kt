@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -193,9 +194,24 @@ fun PrivacySecurityScreen(
     if (passwordChangeDialogVisible) {
         AlertDialog(
             onDismissRequest = { passwordChangeDialogVisible = false },
-            title = { Text("Change Password") },
+            title = {
+                Text(
+                    text = "Change Password",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            },
             text = { 
                 Column {
+                    if (isPasswordError) {
+                        Text(
+                            text = passwordErrorText,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                    
                     // Current Password
                     OutlinedTextField(
                         value = currentPassword,
@@ -254,75 +270,66 @@ fun PrivacySecurityScreen(
                                 )
                             }
                         },
-                        isError = isPasswordError,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    
-                    // Error message
-                    if (isPasswordError) {
-                        Text(
-                            text = passwordErrorText,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(start = 8.dp, top = 4.dp)
-                        )
-                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        when {
-                            currentPassword.isEmpty() -> {
-                                isPasswordError = true
-                                passwordErrorText = "Current password cannot be empty"
-                            }
-                            newPassword.isEmpty() -> {
-                                isPasswordError = true
-                                passwordErrorText = "New password cannot be empty"
-                            }
-                            newPassword.length < 6 -> {
-                                isPasswordError = true
-                                passwordErrorText = "Password must be at least 6 characters"
-                            }
-                            newPassword != confirmPassword -> {
-                                isPasswordError = true
-                                passwordErrorText = "Passwords do not match"
-                            }
-                            else -> {
-                                // Verify current password and change to new password
-                                scope.launch {
-                                    val success = profileViewModel.changePassword(currentPassword, newPassword)
-                                    if (success) {
+                        scope.launch {
+                            when {
+                                currentPassword.isEmpty() -> {
+                                    isPasswordError = true
+                                    passwordErrorText = "Current password is required"
+                                }
+                                newPassword.isEmpty() -> {
+                                    isPasswordError = true
+                                    passwordErrorText = "New password is required"
+                                }
+                                newPassword != confirmPassword -> {
+                                    isPasswordError = true
+                                    passwordErrorText = "Passwords do not match"
+                                }
+                                newPassword.length < 6 -> {
+                                    isPasswordError = true
+                                    passwordErrorText = "Password must be at least 6 characters"
+                                }
+                                else -> {
+                                    try {
+                                        profileViewModel.changePassword(currentPassword, newPassword)
                                         Toast.makeText(context, "Password changed successfully", Toast.LENGTH_SHORT).show()
                                         passwordChangeDialogVisible = false
-                                        // Reset fields
+                                        // Clear passwords
                                         currentPassword = ""
                                         newPassword = ""
                                         confirmPassword = ""
-                                    } else {
+                                    } catch (e: Exception) {
                                         isPasswordError = true
-                                        passwordErrorText = "Current password is incorrect"
+                                        passwordErrorText = e.message ?: "Failed to change password"
                                     }
                                 }
                             }
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
                     Text("Change Password")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { 
-                    passwordChangeDialogVisible = false
-                    // Reset fields
-                    currentPassword = ""
-                    newPassword = ""
-                    confirmPassword = ""
-                    isPasswordError = false
-                }) {
+                TextButton(
+                    onClick = {
+                        passwordChangeDialogVisible = false
+                        // Clear passwords
+                        currentPassword = ""
+                        newPassword = ""
+                        confirmPassword = ""
+                        isPasswordError = false
+                    }
+                ) {
                     Text("Cancel")
                 }
             }
@@ -370,7 +377,7 @@ private fun SectionTitle(title: String) {
 private fun SettingsItem(
     icon: ImageVector,
     title: String,
-    subtitle: String? = null,
+    subtitle: String,
     onClick: () -> Unit
 ) {
     Surface(
@@ -378,26 +385,30 @@ private fun SettingsItem(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp),
-        color = Color.Transparent
+        color = MaterialTheme.colorScheme.background
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
                 )
-                if (subtitle != null) {
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodyMedium,
