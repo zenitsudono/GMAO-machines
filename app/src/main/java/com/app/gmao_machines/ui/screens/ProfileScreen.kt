@@ -24,6 +24,7 @@ import com.app.gmao_machines.ui.viewModel.ThemeViewModel
 @Composable
 fun ProfileScreen(
     onSignOut: () -> Unit = {},
+    onSubScreenChange: (Boolean) -> Unit = {},
     profileViewModel: ProfileViewModel = viewModel(),
     themeViewModel: ThemeViewModel = ThemeViewModelProvider.getThemeViewModel(LocalContext.current)
 ) {
@@ -39,6 +40,12 @@ fun ProfileScreen(
     
     // Collect user info
     val userInfo by profileViewModel.userInfo.collectAsState()
+
+    // Effect to notify when a subscreen is shown or hidden
+    LaunchedEffect(showPrivacyScreen, showHelpScreen, showNotificationsScreen, showEditProfileScreen) {
+        val isInSubScreen = showPrivacyScreen || showHelpScreen || showNotificationsScreen || showEditProfileScreen
+        onSubScreenChange(isInSubScreen)
+    }
 
     // Show sub-screens if needed
     if (showPrivacyScreen) {

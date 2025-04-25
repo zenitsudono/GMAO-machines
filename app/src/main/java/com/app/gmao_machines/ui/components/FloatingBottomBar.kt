@@ -30,8 +30,9 @@ fun FloatingBottomBar(
             .fillMaxWidth()
             .height(64.dp)
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(28.dp)
+                elevation = 12.dp,
+                shape = RoundedCornerShape(28.dp),
+                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             )
             .clip(RoundedCornerShape(28.dp)),
         color = MaterialTheme.colorScheme.surface
