@@ -1,10 +1,7 @@
 package com.app.gmao_machines.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -17,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.gmao_machines.models.Screen
+import com.app.gmao_machines.ui.components.Calendar
 import com.app.gmao_machines.ui.components.FloatingBottomBar
 import com.app.gmao_machines.ui.viewModel.MainViewModel
 
@@ -42,10 +40,24 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.TopCenter
         ) {
             when (currentScreen) {
-                Screen.Home -> Text("Home Screen")
+                Screen.Home -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Calendar",
+                            style = MaterialTheme.typography.headlineMedium,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        Calendar()
+                    }
+                }
                 Screen.History -> Text("History Screen")
                 Screen.Profile -> ProfileScreen(
                     onSignOut = onSignOut,
