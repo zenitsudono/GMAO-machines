@@ -1,0 +1,561 @@
+{
+  "groupes": [
+    {
+      "id": 1,
+      "nom_groupe": "Groupe A"
+    },
+    {
+      "id": 2,
+      "nom_groupe": "Groupe B"
+    },
+    {
+      "id": 3,
+      "nom_groupe": "Groupe C"
+    },
+    {
+      "id": 4,
+      "nom_groupe": "Groupe D"
+    },
+    {
+      "id": 5,
+      "nom_groupe": "Groupe E"
+    }
+  ],
+  "familles": [
+    {
+      "id": 101,
+      "nom_famille": "Famille Alpha",
+      "id_groupe": 1
+    },
+    {
+      "id": 102,
+      "nom_famille": "Famille Beta",
+      "id_groupe": 1
+    },
+    {
+      "id": 103,
+      "nom_famille": "Famille Delta",
+      "id_groupe": 1
+    },
+    {
+      "id": 201,
+      "nom_famille": "Famille Gamma",
+      "id_groupe": 2
+    },
+    {
+      "id": 202,
+      "nom_famille": "Famille Epsilon",
+      "id_groupe": 2
+    },
+    {
+      "id": 301,
+      "nom_famille": "Famille Zeta",
+      "id_groupe": 3
+    },
+    {
+      "id": 401,
+      "nom_famille": "Famille Eta",
+      "id_groupe": 4
+    },
+    {
+      "id": 402,
+      "nom_famille": "Famille Theta",
+      "id_groupe": 4
+    },
+    {
+      "id": 501,
+      "nom_famille": "Famille Iota",
+      "id_groupe": 5
+    }
+  ],
+  "sous_familles": [
+    {
+      "id": 1001,
+      "categorie_sous_famille": "Sous-famille A1",
+      "id_famille": 101
+    },
+    {
+      "id": 1002,
+      "categorie_sous_famille": "Sous-famille A2",
+      "id_famille": 101
+    },
+    {
+      "id": 1003,
+      "categorie_sous_famille": "Sous-famille A3",
+      "id_famille": 101
+    },
+    {
+      "id": 2001,
+      "categorie_sous_famille": "Sous-famille B1",
+      "id_famille": 102
+    },
+    {
+      "id": 2002,
+      "categorie_sous_famille": "Sous-famille B2",
+      "id_famille": 102
+    },
+    {
+      "id": 3001,
+      "categorie_sous_famille": "Sous-famille D1",
+      "id_famille": 103
+    },
+    {
+      "id": 3002,
+      "categorie_sous_famille": "Sous-famille D2",
+      "id_famille": 103
+    },
+    {
+      "id": 4001,
+      "categorie_sous_famille": "Sous-famille G1",
+      "id_famille": 201
+    },
+    {
+      "id": 4002,
+      "categorie_sous_famille": "Sous-famille G2",
+      "id_famille": 201
+    },
+    {
+      "id": 5001,
+      "categorie_sous_famille": "Sous-famille E1",
+      "id_famille": 202
+    },
+    {
+      "id": 6001,
+      "categorie_sous_famille": "Sous-famille Z1",
+      "id_famille": 301
+    },
+    {
+      "id": 7001,
+      "categorie_sous_famille": "Sous-famille H1",
+      "id_famille": 401
+    },
+    {
+      "id": 8001,
+      "categorie_sous_famille": "Sous-famille T1",
+      "id_famille": 402
+    },
+    {
+      "id": 9001,
+      "categorie_sous_famille": "Sous-famille I1",
+      "id_famille": 501
+    }
+  ],
+  "articles": [
+    {
+      "id": 10001,
+      "code_article": "ART-001",
+      "nom_article": "Article Premier",
+      "description": "Description de l'article premier",
+      "id_sous_famille": 1001
+    },
+    {
+      "id": 10002,
+      "code_article": "ART-002",
+      "nom_article": "Article Second",
+      "description": "Description de l'article second",
+      "id_sous_famille": 1001
+    },
+    {
+      "id": 10003,
+      "code_article": "ART-003",
+      "nom_article": "Article Troisième",
+      "description": "Description de l'article troisième",
+      "id_sous_famille": 1002
+    },
+    {
+      "id": 10004,
+      "code_article": "ART-004",
+      "nom_article": "Article Quatrième",
+      "description": "Description de l'article quatrième",
+      "id_sous_famille": 1002
+    },
+    {
+      "id": 10005,
+      "code_article": "ART-005",
+      "nom_article": "Article Cinquième",
+      "description": "Description de l'article cinquième",
+      "id_sous_famille": 1003
+    },
+    {
+      "id": 10006,
+      "code_article": "ART-006",
+      "nom_article": "Article Sixième",
+      "description": "Description de l'article sixième",
+      "id_sous_famille": 2001
+    },
+    {
+      "id": 10007,
+      "code_article": "ART-007",
+      "nom_article": "Article Septième",
+      "description": "Description de l'article septième",
+      "id_sous_famille": 2001
+    },
+    {
+      "id": 10008,
+      "code_article": "ART-008",
+      "nom_article": "Article Huitième",
+      "description": "Description de l'article huitième",
+      "id_sous_famille": 2002
+    },
+    {
+      "id": 10009,
+      "code_article": "ART-009",
+      "nom_article": "Article Neuvième",
+      "description": "Description de l'article neuvième",
+      "id_sous_famille": 3001
+    },
+    {
+      "id": 10010,
+      "code_article": "ART-010",
+      "nom_article": "Article Dixième",
+      "description": "Description de l'article dixième",
+      "id_sous_famille": 3002
+    },
+    {
+      "id": 10011,
+      "code_article": "ART-011",
+      "nom_article": "Article Onzième",
+      "description": "Description de l'article onzième",
+      "id_sous_famille": 4001
+    },
+    {
+      "id": 10012,
+      "code_article": "ART-012",
+      "nom_article": "Article Douzième",
+      "description": "Description de l'article douzième",
+      "id_sous_famille": 4002
+    },
+    {
+      "id": 10013,
+      "code_article": "ART-013",
+      "nom_article": "Article Treizième",
+      "description": "Description de l'article treizième",
+      "id_sous_famille": 5001
+    },
+    {
+      "id": 10014,
+      "code_article": "ART-014",
+      "nom_article": "Article Quatorzième",
+      "description": "Description de l'article quatorzième",
+      "id_sous_famille": 6001
+    },
+    {
+      "id": 10015,
+      "code_article": "ART-015",
+      "nom_article": "Article Quinzième",
+      "description": "Description de l'article quinzième",
+      "id_sous_famille": 7001
+    },
+    {
+      "id": 10016,
+      "code_article": "ART-016",
+      "nom_article": "Article Seizième",
+      "description": "Description de l'article seizième",
+      "id_sous_famille": 8001
+    },
+    {
+      "id": 10017,
+      "code_article": "ART-017",
+      "nom_article": "Article Dix-septième",
+      "description": "Description de l'article dix-septième",
+      "id_sous_famille": 9001
+    },
+    {
+      "id": 10018,
+      "code_article": "ART-018",
+      "nom_article": "Article Dix-huitième",
+      "description": "Description de l'article dix-huitième",
+      "id_sous_famille": 9001
+    },
+    {
+      "id": 10019,
+      "code_article": "ART-019",
+      "nom_article": "Article Dix-neuvième",
+      "description": "Description de l'article dix-neuvième",
+      "id_sous_famille": 8001
+    },
+    {
+      "id": 10020,
+      "code_article": "ART-020",
+      "nom_article": "Article Vingtième",
+      "description": "Description de l'article vingtième",
+      "id_sous_famille": 7001
+    }
+  ],
+  "intervenants": [
+    {
+      "id": 501,
+      "tache_intervenant": "Technicien",
+      "description_intervenant": "Technicien spécialisé en électronique"
+    },
+    {
+      "id": 502,
+      "tache_intervenant": "Ingénieur",
+      "description_intervenant": "Ingénieur de maintenance"
+    },
+    {
+      "id": 503,
+      "tache_intervenant": "Mécanicien",
+      "description_intervenant": "Mécanicien spécialisé en hydraulique"
+    },
+    {
+      "id": 504,
+      "tache_intervenant": "Électricien",
+      "description_intervenant": "Électricien industriel"
+    },
+    {
+      "id": 505,
+      "tache_intervenant": "Technicien",
+      "description_intervenant": "Technicien spécialisé en pneumatique"
+    },
+    {
+      "id": 506,
+      "tache_intervenant": "Ingénieur",
+      "description_intervenant": "Ingénieur logiciel"
+    },
+    {
+      "id": 507,
+      "tache_intervenant": "Technicien",
+      "description_intervenant": "Technicien de surface"
+    },
+    {
+      "id": 508,
+      "tache_intervenant": "Superviseur",
+      "description_intervenant": "Superviseur technique"
+    }
+  ],
+  "interventions": [
+    {
+      "id": 5001,
+      "description_intervention": "Réparation standard",
+      "date_intervention": "2025-04-10"
+    },
+    {
+      "id": 5002,
+      "description_intervention": "Maintenance préventive",
+      "date_intervention": "2025-04-15"
+    },
+    {
+      "id": 5003,
+      "description_intervention": "Remplacement de pièces",
+      "date_intervention": "2025-04-18"
+    },
+    {
+      "id": 5004,
+      "description_intervention": "Mise à jour logicielle",
+      "date_intervention": "2025-04-20"
+    },
+    {
+      "id": 5005,
+      "description_intervention": "Calibration",
+      "date_intervention": "2025-04-22"
+    },
+    {
+      "id": 5006,
+      "description_intervention": "Inspection visuelle",
+      "date_intervention": "2025-04-25"
+    },
+    {
+      "id": 5007,
+      "description_intervention": "Test fonctionnel",
+      "date_intervention": "2025-04-28"
+    },
+    {
+      "id": 5008,
+      "description_intervention": "Installation",
+      "date_intervention": "2025-04-30"
+    },
+    {
+      "id": 5009,
+      "description_intervention": "Réparation d'urgence",
+      "date_intervention": "2025-05-01"
+    },
+    {
+      "id": 5010,
+      "description_intervention": "Formation utilisateur",
+      "date_intervention": "2025-05-02"
+    }
+  ],
+  "articles_serie": [
+    {
+      "id": 20001,
+      "id_intervenant": 501,
+      "id_article": 10001,
+      "id_intervention": 5001
+    },
+    {
+      "id": 20002,
+      "id_intervenant": 502,
+      "id_article": 10002,
+      "id_intervention": 5002
+    },
+    {
+      "id": 20003,
+      "id_intervenant": 501,
+      "id_article": 10003,
+      "id_intervention": 5001
+    },
+    {
+      "id": 20004,
+      "id_intervenant": 503,
+      "id_article": 10004,
+      "id_intervention": 5003
+    },
+    {
+      "id": 20005,
+      "id_intervenant": 506,
+      "id_article": 10005,
+      "id_intervention": 5004
+    },
+    {
+      "id": 20006,
+      "id_intervenant": 504,
+      "id_article": 10006,
+      "id_intervention": 5005
+    },
+    {
+      "id": 20007,
+      "id_intervenant": 505,
+      "id_article": 10007,
+      "id_intervention": 5006
+    },
+    {
+      "id": 20008,
+      "id_intervenant": 508,
+      "id_article": 10008,
+      "id_intervention": 5007
+    },
+    {
+      "id": 20009,
+      "id_intervenant": 507,
+      "id_article": 10009,
+      "id_intervention": 5008
+    },
+    {
+      "id": 20010,
+      "id_intervenant": 502,
+      "id_article": 10010,
+      "id_intervention": 5009
+    },
+    {
+      "id": 20011,
+      "id_intervenant": 506,
+      "id_article": 10011,
+      "id_intervention": 5010
+    },
+    {
+      "id": 20012,
+      "id_intervenant": 501,
+      "id_article": 10012,
+      "id_intervention": 5001
+    },
+    {
+      "id": 20013,
+      "id_intervenant": 503,
+      "id_article": 10013,
+      "id_intervention": 5002
+    },
+    {
+      "id": 20014,
+      "id_intervenant": 504,
+      "id_article": 10014,
+      "id_intervention": 5003
+    },
+    {
+      "id": 20015,
+      "id_intervenant": 505,
+      "id_article": 10015,
+      "id_intervention": 5004
+    },
+    {
+      "id": 20016,
+      "id_intervenant": 502,
+      "id_article": 10016,
+      "id_intervention": 5005
+    },
+    {
+      "id": 20017,
+      "id_intervenant": 507,
+      "id_article": 10017,
+      "id_intervention": 5006
+    },
+    {
+      "id": 20018,
+      "id_intervenant": 508,
+      "id_article": 10018,
+      "id_intervention": 5007
+    },
+    {
+      "id": 20019,
+      "id_intervenant": 501,
+      "id_article": 10019,
+      "id_intervention": 5008
+    },
+    {
+      "id": 20020,
+      "id_intervenant": 503,
+      "id_article": 10020,
+      "id_intervention": 5009
+    },
+    {
+      "id": 20021,
+      "id_intervenant": 504,
+      "id_article": 10001,
+      "id_intervention": 5010
+    },
+    {
+      "id": 20022,
+      "id_intervenant": 505,
+      "id_article": 10002,
+      "id_intervention": 5001
+    },
+    {
+      "id": 20023,
+      "id_intervenant": 506,
+      "id_article": 10003,
+      "id_intervention": 5002
+    },
+    {
+      "id": 20024,
+      "id_intervenant": 507,
+      "id_article": 10004,
+      "id_intervention": 5003
+    },
+    {
+      "id": 20025,
+      "id_intervenant": 508,
+      "id_article": 10005,
+      "id_intervention": 5004
+    },
+    {
+      "id": 20026,
+      "id_intervenant": 501,
+      "id_article": 10006,
+      "id_intervention": 5005
+    },
+    {
+      "id": 20027,
+      "id_intervenant": 502,
+      "id_article": 10007,
+      "id_intervention": 5006
+    },
+    {
+      "id": 20028,
+      "id_intervenant": 503,
+      "id_article": 10008,
+      "id_intervention": 5007
+    },
+    {
+      "id": 20029,
+      "id_intervenant": 504,
+      "id_article": 10009,
+      "id_intervention": 5008
+    },
+    {
+      "id": 20030,
+      "id_intervenant": 505,
+      "id_article": 10010,
+      "id_intervention": 5009
+    }
+  ]
+}

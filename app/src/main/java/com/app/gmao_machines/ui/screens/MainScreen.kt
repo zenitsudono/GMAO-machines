@@ -1,5 +1,7 @@
 package com.app.gmao_machines.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -13,11 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.gmao_machines.data.Intervention
 import com.app.gmao_machines.models.Screen
 import com.app.gmao_machines.ui.components.Calendar
 import com.app.gmao_machines.ui.components.FloatingBottomBar
+import com.app.gmao_machines.ui.viewModel.HistoryViewModel
 import com.app.gmao_machines.ui.viewModel.MainViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel(),
@@ -34,54 +39,70 @@ fun MainScreen(
         showBottomBar = !isInSubScreen
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Main content
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            when (currentScreen) {
-                Screen.Home -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Calendar",
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        Calendar()
-                    }
-                }
-                Screen.History -> Text("History Screen")
-                Screen.Profile -> ProfileScreen(
-                    onSignOut = onSignOut,
-                    onSubScreenChange = onSubScreenChange
-                )
-            }
-        }
-        
-        // FloatingBottomBar with high zIndex to appear above all content
-        // Only show if not in a subscreen
-        if (showBottomBar) {
+    var selectedIntervention by remember { mutableStateOf<Intervention?>(null) }
+    val historyViewModel: HistoryViewModel = viewModel()
+    val interventions by historyViewModel.interventions.collectAsState()
+
+    if (selectedIntervention != null) {
+        InterventionDetailScreen(
+            intervention = selectedIntervention!!,
+            onBackClick = { selectedIntervention = null }
+        )
+    } else {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Main content
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-                    .zIndex(10f),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.TopCenter
             ) {
-                FloatingBottomBar(
-                    items = navigationItems,
-                    currentScreen = currentScreen,
-                    onScreenSelected = { viewModel.navigateTo(it) }
-                )
+                when (currentScreen) {
+                    Screen.Home -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Calendar",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            Calendar(interventions = interventions)
+                        }
+                    }
+                    Screen.History -> HistoryScreen(
+                        viewModel = historyViewModel,
+                        onInterventionClick = { intervention ->
+                            selectedIntervention = intervention
+                        }
+                    )
+                    Screen.Profile -> ProfileScreen(
+                        onSignOut = onSignOut,
+                        onSubScreenChange = onSubScreenChange
+                    )
+                }
+            }
+            
+            // FloatingBottomBar with high zIndex to appear above all content
+            // Only show if not in a subscreen
+            if (showBottomBar) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                        .zIndex(10f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    FloatingBottomBar(
+                        items = navigationItems,
+                        currentScreen = currentScreen,
+                        onScreenSelected = { viewModel.navigateTo(it) }
+                    )
+                }
             }
         }
     }

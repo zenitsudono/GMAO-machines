@@ -225,7 +225,7 @@ private fun SectionTitle(title: String) {
 }
 
 @Composable
-private fun SettingsItem(
+internal fun SettingsItem(
     icon: ImageVector,
     title: String,
     subtitle: String? = null,

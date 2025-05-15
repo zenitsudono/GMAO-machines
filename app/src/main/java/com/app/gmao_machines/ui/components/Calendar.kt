@@ -34,6 +34,8 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
+import com.app.gmao_machines.data.Intervention
+import java.time.ZoneId
 
 data class Machine(
     val id: String,
@@ -51,28 +53,25 @@ enum class MachineStatus {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Calendar(
+    interventions: List<Intervention>,
     modifier: Modifier = Modifier
 ) {
     val today = remember { LocalDate.now() }
     var selectedDate by remember { mutableStateOf(today) }
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
-    // Sample machine data
-    val machines = remember {
-        listOf(
-            Machine("A01", "Production Line Machine", MachineStatus.NEEDS_MAINTENANCE, today.plusDays(5)),
-            Machine("B02", "Packaging Unit", MachineStatus.OPERATIONAL, today.plusDays(15)),
-            Machine("C03", "Assembly Robot", MachineStatus.UNDER_MAINTENANCE, today.plusDays(2)),
-            Machine("D04", "Quality Control Scanner", MachineStatus.OPERATIONAL, today.plusDays(20)),
-            Machine("E05", "Conveyor System", MachineStatus.NEEDS_MAINTENANCE, today.plusDays(7))
-        )
+    // Map interventions by date
+    val interventionsByDate = remember(interventions) {
+        interventions.groupBy {
+            it.dateIntervention.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        }
     }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 80.dp) // Add padding for bottom navigation
+            .padding(bottom = 80.dp)
     ) {
         // Notification Box
         Row(
@@ -115,33 +114,21 @@ fun Calendar(
                 IconButton(onClick = {
                     currentMonth = currentMonth.minusMonths(1)
                 }) {
-                    Text(
-                        "<",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Text("<", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 }
-                
                 Text(
                     text = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy")),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                
                 IconButton(onClick = {
                     currentMonth = currentMonth.plusMonths(1)
                 }) {
-                    Text(
-                        ">",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Text(">", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             // Days of week header
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -159,51 +146,87 @@ fun Calendar(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
             // Calendar grid
             val days = getDaysInMonth(currentMonth)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(7),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp), // Fixed height for calendar grid
+                    .height(280.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(days) { date ->
+                    val hasIntervention = date != null && interventionsByDate.containsKey(date)
                     DayCell(
                         date = date,
                         isSelected = date == selectedDate,
                         isToday = date == today,
+                        hasIntervention = hasIntervention,
                         onClick = { if (date != null) selectedDate = date }
                     )
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(24.dp))
-
-        // Machines List Section
+        // Interventions List for Selected Day
+        val selectedInterventions = interventionsByDate[selectedDate] ?: emptyList()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = "Machines Status",
+                text = "Interventions on ${selectedDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                machines.forEach { machine ->
-                    MachineItem(machine = machine)
+            if (selectedInterventions.isEmpty()) {
+                Text(
+                    text = "No interventions.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                selectedInterventions.forEach { intervention ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            Text(
+                                text = intervention.intervenantName.ifBlank { "Intervention #${intervention.id}" },
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = intervention.status.name,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = when (intervention.status) {
+                                    com.app.gmao_machines.data.InterventionStatus.PENDING -> MaterialTheme.colorScheme.tertiary
+                                    com.app.gmao_machines.data.InterventionStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
+                                    com.app.gmao_machines.data.InterventionStatus.COMPLETED -> MaterialTheme.colorScheme.secondary
+                                    com.app.gmao_machines.data.InterventionStatus.CANCELLED -> MaterialTheme.colorScheme.error
+                                }
+                            )
+                            if (intervention.description != null) {
+                                Text(
+                                    text = intervention.description,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -216,6 +239,7 @@ private fun DayCell(
     date: LocalDate?,
     isSelected: Boolean,
     isToday: Boolean,
+    hasIntervention: Boolean = false,
     onClick: () -> Unit
 ) {
     Box(
@@ -234,83 +258,31 @@ private fun DayCell(
         contentAlignment = Alignment.Center
     ) {
         if (date != null) {
-            Text(
-                text = date.dayOfMonth.toString(),
-                color = when {
-                    isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
-                    isToday -> MaterialTheme.colorScheme.onTertiaryContainer
-                    else -> MaterialTheme.colorScheme.onSurface
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = when {
-                    isSelected || isToday -> FontWeight.Bold
-                    else -> FontWeight.Normal
-                }
-            )
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-private fun MachineItem(machine: Machine) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(
-                when (machine.status) {
-                    MachineStatus.NEEDS_MAINTENANCE -> Color(0xFFFFF3E0).copy(alpha = 0.5f)
-                    MachineStatus.UNDER_MAINTENANCE -> Color(0xFFE3F2FD).copy(alpha = 0.5f)
-                    MachineStatus.OPERATIONAL -> Color(0xFFE8F5E9).copy(alpha = 0.5f)
-                }
-            )
-            .padding(12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
-        ) {
-            Icon(
-                imageVector = when (machine.status) {
-                    MachineStatus.NEEDS_MAINTENANCE -> Icons.Default.Warning
-                    MachineStatus.UNDER_MAINTENANCE -> Icons.Default.Build
-                    MachineStatus.OPERATIONAL -> Icons.Default.CheckCircle
-                },
-                contentDescription = "Machine Status",
-                tint = when (machine.status) {
-                    MachineStatus.NEEDS_MAINTENANCE -> Color(0xFFF57C00)
-                    MachineStatus.UNDER_MAINTENANCE -> Color(0xFF1976D2)
-                    MachineStatus.OPERATIONAL -> Color(0xFF43A047)
-                }
-            )
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "${machine.id} - ${machine.name}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = when (machine.status) {
-                        MachineStatus.NEEDS_MAINTENANCE -> "Needs Maintenance"
-                        MachineStatus.UNDER_MAINTENANCE -> "Under Maintenance"
-                        MachineStatus.OPERATIONAL -> "Operational"
+                    text = date.dayOfMonth.toString(),
+                    color = when {
+                        isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
+                        isToday -> MaterialTheme.colorScheme.onTertiaryContainer
+                        else -> MaterialTheme.colorScheme.onSurface
                     },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = when {
+                        isSelected || isToday -> FontWeight.Bold
+                        else -> FontWeight.Normal
+                    }
                 )
+                if (hasIntervention) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                    )
+                }
             }
         }
-        Text(
-            text = "Next: ${machine.nextMaintenanceDate.format(DateTimeFormatter.ofPattern("MMM dd"))}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
